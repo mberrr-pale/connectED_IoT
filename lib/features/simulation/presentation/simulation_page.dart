@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import '../data/simulation_cases.dart';
+import '../models/simulation_case.dart';
+import 'simulation_detail_page.dart';
 
 class SimulationPage extends StatelessWidget {
   final int meetingNumber;
@@ -12,395 +15,185 @@ class SimulationPage extends StatelessWidget {
 
   static const Color _accent = Color(0xFF087E8B);
 
-  static const String _wokwiUrl =
-      'https://wokwi.com/projects/new/esp32';
+  static const Map<int, String> _meetingTitles = {
+    1: 'Pengenalan IoT',
+    2: 'Komponen dan Sensor',
+    3: 'Koneksi dan Komunikasi',
+    4: 'Proyek Akhir IoT',
+  };
 
   @override
   Widget build(BuildContext context) {
-    if (meetingNumber != 1) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Simulasi')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              'Materi simulasi Pertemuan $meetingNumber '
-              'akan ditambahkan setelah Pertemuan 1 selesai.',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      );
-    }
+    final cases = simulationCases
+        .where((item) => item.meetingNumber == meetingNumber)
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Simulasi'),
+        title: const Text('Katalog Simulasi'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           const Text(
-            'SIMULASI · PERTEMUAN 1',
+            'PRAKTIK IoT',
             style: TextStyle(
               color: _accent,
-              fontWeight: FontWeight.bold,
               fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
-            'Indikator Aktivitas Sistem Monitoring Ruangan',
+            _meetingTitles[meetingNumber] ??
+                'Pertemuan $meetingNumber',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 8),
           const Text(
-            'Selesaikan studi kasus dengan membuat indikator LED '
-            'berkedip menggunakan ESP32.',
+            'Pilih studi kasus, pelajari tantangannya, lalu '
+            'praktikkan program menggunakan simulasi Wokwi.',
           ),
-          const SizedBox(height: 24),
-
-          _buildSection(
-            icon: Icons.assignment_outlined,
-            title: 'Studi kasus dan target',
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Situasi',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  'Sebuah ruangan akan dilengkapi sistem monitoring '
-                  'suhu. Sebelum menambahkan sensor, kamu diminta '
-                  'mengenal ESP32 sebagai perangkat pengendali '
-                  'dengan membuat indikator aktivitas menggunakan LED.',
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Tugas kamu',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                _TaskItem(
-                  number: '1',
-                  text: 'Buka proyek baru ESP32 di Wokwi.',
-                ),
-                _TaskItem(
-                  number: '2',
-                  text: 'Identifikasi ESP32, LED, dan hubungan pin.',
-                ),
-                _TaskItem(
-                  number: '3',
-                  text: 'Buat program agar LED menyala satu detik '
-                      'dan mati satu detik secara berulang.',
-                ),
-                _TaskItem(
-                  number: '4',
-                  text: 'Jalankan simulasi dan amati LED.',
-                ),
-                _TaskItem(
-                  number: '5',
-                  text: 'Jelaskan fungsi ESP32 dan hubungan program '
-                      'dengan output LED.',
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Target hasil',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  'Simulasi LED berkedip berhasil dijalankan dan '
-                  'kamu memahami bagaimana ESP32 mengendalikan '
-                  'output melalui program.',
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildSection(
-            icon: Icons.format_list_numbered,
-            title: 'Petunjuk penyelesaian',
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _StepItem(
-                  number: '1',
-                  title: 'Buat proyek ESP32',
-                  description:
-                      'Buka Wokwi dan pilih proyek baru menggunakan '
-                      'board ESP32.',
-                ),
-                _StepItem(
-                  number: '2',
-                  title: 'Siapkan LED',
-                  description:
-                      'Tambahkan LED dan resistor yang sesuai. '
-                      'Hubungkan LED ke pin GPIO yang dipilih dan '
-                      'GND melalui rangkaian yang benar.',
-                ),
-                _StepItem(
-                  number: '3',
-                  title: 'Tulis program',
-                  description:
-                      'Atur pin LED sebagai OUTPUT, kemudian gunakan '
-                      'digitalWrite() dan delay() untuk mengatur '
-                      'LED menyala dan mati.',
-                ),
-                _StepItem(
-                  number: '4',
-                  title: 'Jalankan simulasi',
-                  description:
-                      'Tekan tombol Start Simulation. Periksa apakah '
-                      'LED menyala dan mati bergantian setiap satu detik.',
-                ),
-                _StepItem(
-                  number: '5',
-                  title: 'Evaluasi hasil',
-                  description:
-                      'Jika LED belum berkedip, periksa kembali '
-                      'hubungan pin, kode program, dan konfigurasi LED.',
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildSection(
-            icon: Icons.code_rounded,
-            title: 'Referensi kode program',
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Gunakan kode berikut sebagai referensi setelah '
-                  'mencoba menulis program sendiri.',
-                ),
-                SizedBox(height: 12),
-                _CodeReference(),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildSection(
-            icon: Icons.open_in_new_rounded,
-            title: 'Praktik di Wokwi',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Buka Wokwi untuk membuat proyek ESP32 sendiri. '
-                  'Terapkan petunjuk di atas, lalu jalankan '
-                  'simulasi untuk memeriksa hasilnya.',
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: _openWokwi,
-                    icon: const Icon(Icons.open_in_new),
-                    label: const Text('Buka Wokwi ESP32'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           const SizedBox(height: 20),
-          const Text(
-            'Hasil praktik: proyek ESP32 dengan rangkaian LED '
-            'dan program output sederhana untuk dikembangkan '
-            'pada pertemuan berikutnya.',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 13,
-            ),
+          Row(
+            children: [
+              const Icon(
+                Icons.assignment_outlined,
+                color: _accent,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${cases.length} studi kasus tersedia',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 16),
+          if (cases.isEmpty)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  'Studi kasus untuk pertemuan ini belum tersedia.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          else
+            ...cases.map(
+              (item) => _SimulationCaseCard(
+                simulationCase: item,
+                onTap: () => _openDetail(context, item),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildSection({
-    required IconData icon,
-    required String title,
-    required Widget child,
-  }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: _accent),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            child,
-          ],
+  void _openDetail(
+    BuildContext context,
+    SimulationCase item,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SimulationDetailPage(
+          meetingNumber: item.meetingNumber,
+          simulationCase: item,
         ),
       ),
     );
   }
-
-  Future<void> _openWokwi() async {
-    final uri = Uri.parse(_wokwiUrl);
-
-    try {
-      final opened = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-
-      if (!opened) {
-        debugPrint('Wokwi tidak dapat dibuka.');
-      }
-    } catch (error) {
-      debugPrint('Gagal membuka Wokwi: $error');
-    }
-  }
 }
 
-class _TaskItem extends StatelessWidget {
-  final String number;
-  final String text;
+class _SimulationCaseCard extends StatelessWidget {
+  final SimulationCase simulationCase;
+  final VoidCallback onTap;
 
-  const _TaskItem({
-    required this.number,
-    required this.text,
+  const _SimulationCaseCard({
+    required this.simulationCase,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 13,
-            backgroundColor: const Color(0xFFE6F7F8),
-            child: Text(
-              number,
-              style: const TextStyle(
-                color: Color(0xFF087E8B),
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+    return Card(
+      margin: const EdgeInsets.only(bottom: 14),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6F7F8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.memory_rounded,
+                      color: Color(0xFF087E8B),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      simulationCase.title,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ],
               ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(child: Text(text)),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepItem extends StatelessWidget {
-  final String number;
-  final String title;
-  final String description;
-
-  const _StepItem({
-    required this.number,
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 15,
-            backgroundColor: const Color(0xFFE6F7F8),
-            child: Text(
-              number,
-              style: const TextStyle(
-                color: Color(0xFF087E8B),
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 12),
+              Text(simulationCase.description),
+              const SizedBox(height: 14),
+              const Row(
+                children: [
+                  Icon(
+                    Icons.play_circle_outline_rounded,
+                    size: 18,
+                    color: Color(0xFF087E8B),
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    'Praktik ESP32 · Wokwi',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF087E8B),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: onTap,
+                  child: const Text('Buka Studi Kasus'),
                 ),
-                const SizedBox(height: 4),
-                Text(description),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CodeReference extends StatelessWidget {
-  const _CodeReference();
-
-  static const String _code = '''
-const int ledPin = 13;
-
-void setup() {
-  pinMode(ledPin, OUTPUT);
-}
-
-void loop() {
-  digitalWrite(ledPin, HIGH);
-  delay(1000);
-
-  digitalWrite(ledPin, LOW);
-  delay(1000);
-}
-''';
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0F2F5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: SelectableText(
-        _code,
-        style: const TextStyle(
-          fontFamily: 'monospace',
-          fontSize: 13,
-          height: 1.6,
         ),
       ),
     );

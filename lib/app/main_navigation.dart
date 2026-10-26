@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_colors.dart';
@@ -8,6 +7,7 @@ import '../features/profile/presentation/profile_page.dart';
 import '../features/results/presentation/results_page.dart';
 import '../features/simulation/presentation/simulation_page.dart';
 import '../models/learning_progress.dart';
+import '../features/home/presentation/meeting_detail_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -46,7 +46,47 @@ class _MainNavigationState extends State<MainNavigation> {
         onProgressChanged: () => setState(() {}),
         onOpenSimulation: _openSimulation,
       ),
-      const MaterialsPage(),
+      MaterialsPage(
+        progress: _progress,
+        onOpenMeeting: (meetingNumber) {
+          final meeting = _progress.meetings[meetingNumber]!;
+
+          final meetingTitles = <int, String>{
+            1: 'Pertemuan 1 - Konsep IoT & Mikrokontroler',
+            2: 'Pertemuan 2 - Sensor & IoT Protocol',
+            3: 'Pertemuan 3 - Cloud IoT Integration',
+            4: 'Pertemuan 4 - Dashboard Monitoring'
+          };
+        
+        if (!_progress.isMeetingUnlocked(meetingNumber)){
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Lulus post-test pertemuan sebelumnya '
+                'untuk membuka pertemuan ini.',
+              ),
+            ),
+          );
+          return;
+        }
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MeetingDetailPage(
+              meetingNumber: meetingNumber, 
+              meetingTitle: meetingTitles[meetingNumber]!,
+              progress: meeting, 
+              isUnlocked: true,
+              onProgressChanged: () => setState(() {}),
+              onOpenSimulation: _openSimulation,
+            ),
+          ),
+        ).then((_) {
+          if (mounted) setState(() {});
+        });
+        },
+      ),
       _isSimulationUnlocked
           ? const SimulationPage(meetingNumber: 1)
           : const _LockedSimulationPage(),
