@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../models/learning_progress.dart';
+import '../../../widgets/app_page_header.dart';
 
 class ResultsPage extends StatelessWidget {
   final LearningProgress progress;
@@ -15,68 +16,147 @@ class ResultsPage extends StatelessWidget {
     final rate = progress.completionRate.clamp(0.0, 1.0);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Hasil Belajar')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          _buildProgressCard(completed, total, rate),
-          const SizedBox(height: 24),
-          Text(
-            'Perbandingan Nilai',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+      appBar: AppBar(
+        toolbarHeight: 0,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: AppColors.background,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const AppPageHeader(
+              title: 'Hasil',
+              subtitle: 'Rekap dan pencapaian belajar',
+              icon: Icons.bar_chart_rounded,
             ),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'Perbandingan nilai Pre-test dan Post-test pertama '
-            'pada setiap pertemuan.',
-            style: TextStyle(color: AppColors.textSecondary, height: 1.5),
-          ),
-          const SizedBox(height: 12),
-          ...List.generate(LearningProgress.totalMeetings, (index) {
-            final number = index + 1;
-            final meeting = progress.meetings[number]!;
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                children: [
+                  _buildProgressCard(completed, total, rate),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Perbandingan Nilai',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Perbandingan nilai Pre-test dan Post-test pertama '
+                    'pada setiap pertemuan.',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ...List.generate(LearningProgress.totalMeetings, (index) {
+                    final number = index + 1;
+                    final meeting = progress.meetings[number]!;
 
-            return _buildMeetingResult(number: number, meeting: meeting);
-          }),
-        ],
+                    return _buildMeetingResult(
+                      number: number,
+                      meeting: meeting,
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  
   Widget _buildProgressCard(int completed, int total, double rate) {
+    final percentage = (rate * 100).round();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            const Text(
-              'Progres Pembelajaran',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+            SizedBox(
+              width: 92,
+              height: 92,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: 88,
+                    height: 88,
+                    child: CircularProgressIndicator(
+                      value: rate,
+                      strokeWidth: 8,
+                      strokeCap: StrokeCap.round,
+                      backgroundColor: AppColors.primaryLight,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$percentage%',
+                        style: const TextStyle(
+                          fontSize: 23,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const Text(
+                        'Progres',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              '${(rate * 100).round()}%',
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Progres Pembelajaran',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: rate,
+                      minHeight: 8,
+                      backgroundColor: AppColors.primaryLight,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '$completed dari $total tahap selesai',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(value: rate, minHeight: 8),
-            ),
-            const SizedBox(height: 8),
-            Text('$completed dari $total tahap selesai'),
           ],
         ),
       ),

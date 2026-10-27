@@ -12,9 +12,10 @@ void main() {
     await tester.pumpWidget(const ConnectedIoTApp());
 
     expect(find.text('Connected IoT'), findsOneWidget);
-    expect(find.text('Mulai belajar'), findsOneWidget);
+    expect(find.text('Mulai belajar'), findsNothing);
 
-    await tester.tap(find.text('Mulai belajar'));
+    // Lewati animasi splash dan tunggu navigasi otomatis.
+    await tester.pump(const Duration(milliseconds: 2600));
     await tester.pumpAndSettle();
 
     expect(find.text('Kenali Dunia IoT'), findsOneWidget);
@@ -34,7 +35,8 @@ void main() {
 
     await tester.pumpWidget(const ConnectedIoTApp());
 
-    await tester.tap(find.text('Mulai belajar'));
+    // Tunggu splash otomatis selesai.
+    await tester.pump(const Duration(milliseconds: 2600));
     await tester.pumpAndSettle();
 
     expect(find.byType(MainNavigation), findsOneWidget);

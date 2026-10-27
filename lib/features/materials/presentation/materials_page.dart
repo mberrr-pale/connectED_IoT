@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../models/learning_progress.dart';
+import '../../../widgets/app_page_header.dart';
 
 class MaterialsPage extends StatelessWidget {
   const MaterialsPage({
@@ -48,38 +49,49 @@ class MaterialsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+        child: Column(
           children: [
-            Text(
-              'KATALOG PEMBELAJARAN',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-              ),
+            const AppPageHeader(
+              title: 'Materi',
+              subtitle: 'Jelajahi materi pembelajaran IoT',
+              icon: Icons.menu_book_rounded,
             ),
-            const SizedBox(height: 6),
-            Text(
-              'Materi IoT',
-              style: Theme.of(context).textTheme.headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Pelajari empat pertemuan secara berurutan. '
-              'Pertemuan berikutnya terbuka setelah kamu lulus post-test.',
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: AppColors.textSecondary, height: 1.5),
-            ),
-            const SizedBox(height: 20),
-            _buildSummary(context),
-            const SizedBox(height: 20),
-            ...List.generate(
-              _meetings.length,
-              (index) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildMeetingCard(context, index),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                children: [
+                  Text(
+                    'KATALOG PEMBELAJARAN',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Materi IoT',
+                    style: Theme.of(context).textTheme.headlineMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Pelajari empat pertemuan secara berurutan. '
+                    'Pertemuan berikutnya terbuka setelah kamu lulus post-test.',
+                    style: Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary, height: 1.5),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSummary(context),
+                  const SizedBox(height: 20),
+                  ...List.generate(
+                    _meetings.length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildMeetingCard(context, index),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

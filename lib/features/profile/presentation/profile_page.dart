@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../models/student_profile.dart';
 import '../../../services/learning_progress_storage.dart';
 import '../../../services/profile_storage.dart';
+import '../../../widgets/app_page_header.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -47,19 +49,15 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext, false);
-            },
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Batal'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
             ),
-            onPressed: () {
-              Navigator.pop(dialogContext, true);
-            },
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Hapus Akun'),
           ),
         ],
@@ -113,138 +111,284 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (profile == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Profil')),
-        body: const Center(child: Text('Data profil tidak ditemukan.')),
+        body: SafeArea(
+          child: Column(
+            children: [
+              const AppPageHeader(
+                title: 'Profil',
+                subtitle: 'Informasi akun siswa',
+                icon: Icons.person_outline_rounded,
+              ),
+              const Expanded(
+                child: Center(child: Text('Data profil tidak ditemukan.')),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil'), centerTitle: true),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
+        child: Column(
           children: [
-            // Header profil
-            Center(
-              child: Column(
+            const AppPageHeader(
+              title: 'Profil',
+              subtitle: 'Informasi akun siswa',
+              icon: Icons.person_outline_rounded,
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
                 children: [
-                  CircleAvatar(
-                    radius: 42,
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    child: Icon(
-                      Icons.person_rounded,
-                      size: 46,
-                      color: theme.colorScheme.primary,
+                  // Header profil siswa
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppColors.primaryLight, AppColors.surface],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.border),
                     ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.border,
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.person_rounded,
+                            size: 48,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'PROFIL SISWA',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          profile.name,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.school_rounded,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                'Siswa',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  const _ProfileSectionTitle(
+                    title: 'IDENTITAS SISWA',
+                    subtitle: 'Informasi identitas yang terdaftar',
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    profile.name,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+
+                  Card(
+                    margin: EdgeInsets.zero,
+                    color: AppColors.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      side: const BorderSide(color: AppColors.border),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      children: [
+                        _ProfileInfoTile(
+                          icon: Icons.badge_outlined,
+                          label: 'Nama Lengkap',
+                          value: profile.name,
+                        ),
+                        const _ProfileDivider(),
+                        _ProfileInfoTile(
+                          icon: Icons.numbers_rounded,
+                          label: 'NIS',
+                          value: profile.nis,
+                        ),
+                        const _ProfileDivider(),
+                        _ProfileInfoTile(
+                          icon: Icons.school_outlined,
+                          label: 'Kelas',
+                          value: profile.studentClass,
+                        ),
+                        const _ProfileDivider(),
+                        _ProfileInfoTile(
+                          icon: Icons.apartment_rounded,
+                          label: 'Nama Sekolah',
+                          value: profile.school,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 6,
+
+                  const SizedBox(height: 28),
+
+                  const _ProfileSectionTitle(
+                    title: 'PERAN PENGGUNA',
+                    subtitle: 'Peran akun dalam aplikasi',
+                  ),
+                  const SizedBox(height: 12),
+
+                  Card(
+                    margin: EdgeInsets.zero,
+                    color: AppColors.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      side: const BorderSide(color: AppColors.border),
                     ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(20),
+                    child: const ListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      leading: _ProfileIconBox(
+                        icon: Icons.school_rounded,
+                        color: AppColors.primary,
+                      ),
+                      title: Text(
+                        'Siswa',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Text('Mengakses materi dan aktivitas belajar'),
                     ),
-                    child: Text(
-                      'Siswa',
-                      style: TextStyle(
-                        color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w600,
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  const _ProfileSectionTitle(
+                    title: 'PENGELOLAAN AKUN',
+                    subtitle: 'Kelola data akun pada perangkat ini',
+                  ),
+                  const SizedBox(height: 12),
+
+                  Card(
+                    margin: EdgeInsets.zero,
+                    color: AppColors.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      side: BorderSide(
+                        color: AppColors.error.withValues(alpha: 0.45),
                       ),
                     ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      leading: const _ProfileIconBox(
+                        icon: Icons.delete_outline_rounded,
+                        color: AppColors.error,
+                      ),
+                      title: const Text(
+                        'Hapus Akun',
+                        style: TextStyle(
+                          color: AppColors.error,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Hapus identitas dan progres belajar',
+                      ),
+                      trailing: _isDeleting
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(
+                              Icons.chevron_right_rounded,
+                              color: AppColors.textSecondary,
+                            ),
+                      enabled: !_isDeleting,
+                      onTap: _isDeleting ? null : _confirmDeleteAccount,
+                    ),
                   ),
                 ],
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // Identitas siswa
-            Text(
-              'Identitas Siswa',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Card(
-              child: Column(
-                children: [
-                  _ProfileInfoTile(
-                    icon: Icons.badge_outlined,
-                    label: 'Nama Lengkap',
-                    value: profile.name,
-                  ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  _ProfileInfoTile(
-                    icon: Icons.numbers_rounded,
-                    label: 'NIS',
-                    value: profile.nis,
-                  ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  _ProfileInfoTile(
-                    icon: Icons.school_outlined,
-                    label: 'Kelas',
-                    value: profile.studentClass,
-                  ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  _ProfileInfoTile(
-                    icon: Icons.apartment_rounded,
-                    label: 'Nama Sekolah',
-                    value: profile.school,
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // Pengelolaan akun
-            Text(
-              'Pengelolaan Akun',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Card(
-              child: ListTile(
-                leading: const Icon(
-                  Icons.delete_outline_rounded,
-                  color: Colors.red,
-                ),
-                title: const Text(
-                  'Hapus Akun',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: const Text('Hapus identitas dan progres belajar'),
-                trailing: _isDeleting
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.chevron_right_rounded),
-                enabled: !_isDeleting,
-                onTap: _isDeleting ? null : _confirmDeleteAccount,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProfileSectionTitle extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _ProfileSectionTitle({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -262,14 +406,74 @@ class _ProfileInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
-      title: Text(label, style: Theme.of(context).textTheme.bodySmall),
-      subtitle: Text(
-        value,
-        style: Theme.of(context).textTheme.bodyLarge
-            ?.copyWith(fontWeight: FontWeight.w500),
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ProfileIconBox(icon: icon, color: AppColors.primary),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  value.isEmpty ? '-' : value,
+                  textAlign: TextAlign.start,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _ProfileIconBox extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+
+  const _ProfileIconBox({required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, color: color, size: 22),
+    );
+  }
+}
+
+class _ProfileDivider extends StatelessWidget {
+  const _ProfileDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      height: 1,
+      thickness: 1,
+      indent: 16,
+      endIndent: 16,
+      color: AppColors.border,
     );
   }
 }
