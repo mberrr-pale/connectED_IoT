@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -8,8 +7,7 @@ class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() =>
-      _OnboardingScreenState();
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
@@ -56,9 +54,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _goToRoleSelection() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (_) => const RoleSelectionScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
     );
   }
 
@@ -112,14 +108,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           height: 180,
                           decoration: BoxDecoration(
                             color: slide.backgroundColor,
-                            borderRadius:
-                                BorderRadius.circular(44),
+                            borderRadius: BorderRadius.circular(44),
                           ),
-                          child: Icon(
-                            slide.icon,
-                            size: 88,
-                            color: slide.color,
-                          ),
+                          child: Icon(slide.icon, size: 88, color: slide.color),
                         ),
 
                         const SizedBox(height: 40),
@@ -127,9 +118,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           slide.title,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
+                          style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
@@ -159,9 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   _items.length,
                   (index) => AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
                     width: index == _currentPage ? 24 : 8,
                     height: 8,
                     decoration: BoxDecoration(
@@ -181,9 +168,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: FilledButton(
                   onPressed: _nextPage,
                   child: Text(
-                    _currentPage == _items.length - 1
-                        ? 'Mulai'
-                        : 'Lanjutkan',
+                    _currentPage == _items.length - 1 ? 'Mulai' : 'Lanjutkan',
                   ),
                 ),
               ),

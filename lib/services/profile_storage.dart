@@ -1,4 +1,3 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/student_profile.dart';
@@ -16,10 +15,7 @@ class ProfileStorage {
 
     await preferences.setString(_nameKey, profile.name);
     await preferences.setString(_nisKey, profile.nis);
-    await preferences.setString(
-      _classKey,
-      profile.studentClass,
-    );
+    await preferences.setString(_classKey, profile.studentClass);
     await preferences.setString(_schoolKey, profile.school);
   }
 
@@ -31,10 +27,7 @@ class ProfileStorage {
     final studentClass = preferences.getString(_classKey);
     final school = preferences.getString(_schoolKey);
 
-    if (name == null ||
-        nis == null ||
-        studentClass == null ||
-        school == null) {
+    if (name == null || nis == null || studentClass == null || school == null) {
       return null;
     }
 

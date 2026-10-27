@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../data/simulation_cases.dart';
@@ -8,10 +7,7 @@ import 'simulation_detail_page.dart';
 class SimulationPage extends StatelessWidget {
   final int meetingNumber;
 
-  const SimulationPage({
-    super.key,
-    this.meetingNumber = 1,
-  });
+  const SimulationPage({super.key, this.meetingNumber = 1});
 
   static const Color _accent = Color(0xFF087E8B);
 
@@ -29,9 +25,7 @@ class SimulationPage extends StatelessWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Katalog Simulasi'),
-      ),
+      appBar: AppBar(title: const Text('Katalog Simulasi')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -46,11 +40,9 @@ class SimulationPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            _meetingTitles[meetingNumber] ??
-                'Pertemuan $meetingNumber',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            _meetingTitles[meetingNumber] ?? 'Pertemuan $meetingNumber',
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -60,16 +52,11 @@ class SimulationPage extends StatelessWidget {
           const SizedBox(height: 20),
           Row(
             children: [
-              const Icon(
-                Icons.assignment_outlined,
-                color: _accent,
-              ),
+              const Icon(Icons.assignment_outlined, color: _accent),
               const SizedBox(width: 8),
               Text(
                 '${cases.length} studi kasus tersedia',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -96,10 +83,7 @@ class SimulationPage extends StatelessWidget {
     );
   }
 
-  void _openDetail(
-    BuildContext context,
-    SimulationCase item,
-  ) {
+  void _openDetail(BuildContext context, SimulationCase item) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -152,12 +136,8 @@ class _SimulationCaseCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       simulationCase.title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   const Icon(Icons.chevron_right_rounded),

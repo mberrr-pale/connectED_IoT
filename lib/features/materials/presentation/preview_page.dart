@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class PreviewPage extends StatelessWidget {
@@ -14,9 +13,7 @@ class PreviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Preview'),
-      ),
+      appBar: AppBar(title: const Text('Preview')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -29,10 +26,7 @@ class PreviewPage extends StatelessWidget {
 
           const Text(
             'PREVIEW Pertemuan 2',
-            style: TextStyle(
-              fontSize: 23,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
 
@@ -104,10 +98,7 @@ class PreviewPage extends StatelessWidget {
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.info_outline_rounded,
-                  color: Color(0xFF087E8B),
-                ),
+                Icon(Icons.info_outline_rounded, color: Color(0xFF087E8B)),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -139,10 +130,7 @@ class PreviewPage extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     );
   }
 
@@ -161,12 +149,7 @@ class PreviewPage extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(height: 1.5),
-            ),
-          ),
+          Expanded(child: Text(text, style: const TextStyle(height: 1.5))),
         ],
       ),
     );

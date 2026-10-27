@@ -38,8 +38,7 @@ const List<LessonSection> meeting1Sections = [
         'Sistem IoT umumnya melibatkan sensor atau aktuator, '
         'mikrokontroler, konektivitas jaringan, serta aplikasi '
         'atau platform untuk memantau data.',
-    imagePath:
-        'assets/images/materials/meeting_1/komponen_iot.png',
+    imagePath: 'assets/images/materials/meeting_1/komponen_iot.png',
     caption: 'Ilustrasi komponen utama sistem IoT.',
   ),
   LessonSection(
@@ -50,8 +49,7 @@ const List<LessonSection> meeting1Sections = [
         'untuk membaca masukan, memproses instruksi, dan mengendalikan '
         'keluaran. Mikrokontroler sering digunakan sebagai pengendali '
         'utama pada perangkat IoT.',
-    imagePath:
-        'assets/images/materials/meeting_1/struktur_mikrokontroler.png',
+    imagePath: 'assets/images/materials/meeting_1/struktur_mikrokontroler.png',
     caption: 'Ilustrasi struktur mikrokontroler.',
   ),
   LessonSection(

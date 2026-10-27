@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -55,26 +54,23 @@ class MaterialsPage extends StatelessWidget {
             Text(
               'KATALOG PEMBELAJARAN',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
               'Materi IoT',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(context).textTheme.headlineMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               'Pelajari empat pertemuan secara berurutan. '
               'Pertemuan berikutnya terbuka setelah kamu lulus post-test.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary, height: 1.5),
             ),
             const SizedBox(height: 20),
             _buildSummary(context),
@@ -96,9 +92,8 @@ class MaterialsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withValues(
-              alpha: 0.55,
-            ),
+        color: Theme.of(context).colorScheme.primaryContainer
+            .withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
@@ -138,10 +133,10 @@ class MaterialsPage extends StatelessWidget {
     final status = isComplete
         ? 'SELESAI'
         : !isUnlocked
-            ? 'TERKUNCI'
-            : completedCount > 0
-                ? 'SEDANG DIPELAJARI'
-                : 'TERBUKA';
+        ? 'TERKUNCI'
+        : completedCount > 0
+        ? 'SEDANG DIPELAJARI'
+        : 'TERBUKA';
 
     return Opacity(
       opacity: isUnlocked ? 1 : 0.72,
@@ -218,27 +213,23 @@ class MaterialsPage extends StatelessWidget {
                           const SizedBox(height: 7),
                           Text(
                             info.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
+                            style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 6),
                           Text(
                             info.description,
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.textSecondary,
-                                      height: 1.4,
-                                    ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  height: 1.4,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             '$completedCount/${LearningProgress.stagesPerMeeting} langkah',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.textSecondary,
-                                    ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textSecondary),
                           ),
                         ],
                       ),

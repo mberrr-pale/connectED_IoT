@@ -1,4 +1,3 @@
-
 enum LearningStage {
   preTest('Pre-test'),
   material('Materi'),
@@ -19,6 +18,7 @@ class MeetingProgress {
   final int meetingNumber;
   final Set<LearningStage> completedStages = {};
 
+  int? preTestScore;
   int? firstPostTestScore;
   int? bestPostTestScore;
 
@@ -28,14 +28,70 @@ class MeetingProgress {
 
   MeetingProgress({required this.meetingNumber});
 
+  // Memulihkan progres pertemuan dari data tersimpan.
+  MeetingProgress.fromMap(Map<String, dynamic> map)
+    : meetingNumber = (map['meetingNumber'] as num?)?.toInt() ?? 1 {
+    final savedStages = map['completedStages'];
+
+    if (savedStages is List) {
+      for (final value in savedStages) {
+        if (value is String) {
+          for (final stage in LearningStage.values) {
+            if (stage.name == value) {
+              completedStages.add(stage);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    preTestScore = (map['preTestScore'] as num?)?.toInt();
+    firstPostTestScore = (map['firstPostTestScore'] as num?)?.toInt();
+    bestPostTestScore = (map['bestPostTestScore'] as num?)?.toInt();
+
+    attemptsInCurrentRound =
+        (map['attemptsInCurrentRound'] as num?)?.toInt() ?? 0;
+
+    requiresReview = map['requiresReview'] as bool? ?? false;
+
+    _materialReviewedAfterFailure =
+        map['materialReviewedAfterFailure'] as bool? ?? false;
+  }
+
+  // Mengubah progres pertemuan menjadi data yang bisa disimpan.
+  Map<String, dynamic> toMap() {
+    return {
+      'meetingNumber': meetingNumber,
+      'completedStages': completedStages.map((stage) => stage.name).toList(),
+      'preTestScore': preTestScore,
+      'firstPostTestScore': firstPostTestScore,
+      'bestPostTestScore': bestPostTestScore,
+      'attemptsInCurrentRound': attemptsInCurrentRound,
+      'requiresReview': requiresReview,
+      'materialReviewedAfterFailure': _materialReviewedAfterFailure,
+    };
+  }
+
   bool get passedPostTest =>
-      bestPostTestScore != null &&
-      bestPostTestScore! >= passingScore;
+      bestPostTestScore != null && bestPostTestScore! >= passingScore;
 
   bool get canRetryPostTest =>
       !passedPostTest &&
       !requiresReview &&
       attemptsInCurrentRound < maxAttemptsPerRound;
+
+  void recordPreTestResult({required int score}) {
+    if (score < 0 || score > 100) {
+      throw ArgumentError.value(
+        score,
+        'score',
+        'Nilai harus berada pada rentang 0–100.',
+      );
+    }
+
+    preTestScore = score;
+  }
 
   bool isStageCompleted(LearningStage stage) {
     return completedStages.contains(stage);
@@ -97,7 +153,6 @@ class MeetingProgress {
     }
 
     attemptsInCurrentRound++;
-
     firstPostTestScore ??= score;
 
     if (bestPostTestScore == null || score > bestPostTestScore!) {
@@ -130,10 +185,49 @@ class LearningProgress {
   final Map<int, MeetingProgress> meetings;
 
   LearningProgress.initial()
-      : meetings = {
-          for (int i = 1; i <= totalMeetings; i++)
-            i: MeetingProgress(meetingNumber: i),
-        };
+    : meetings = {
+        for (int i = 1; i <= totalMeetings; i++)
+          i: MeetingProgress(meetingNumber: i),
+      };
+
+  // Memulihkan semua pertemuan dari data tersimpan.
+  LearningProgress.fromMap(Map<String, dynamic> map)
+    : meetings = _meetingsFromMap(map['meetings']);
+
+  static Map<int, MeetingProgress> _meetingsFromMap(dynamic savedMeetings) {
+    final result = <int, MeetingProgress>{
+      for (int i = 1; i <= totalMeetings; i++)
+        i: MeetingProgress(meetingNumber: i),
+    };
+
+    if (savedMeetings is Map) {
+      for (final entry in savedMeetings.entries) {
+        final meetingNumber = int.tryParse(entry.key.toString());
+        final data = entry.value;
+
+        if (meetingNumber != null &&
+            meetingNumber >= 1 &&
+            meetingNumber <= totalMeetings &&
+            data is Map) {
+          result[meetingNumber] = MeetingProgress.fromMap(
+            Map<String, dynamic>.from(data),
+          );
+        }
+      }
+    }
+
+    return result;
+  }
+
+  // Mengubah semua progres menjadi data yang bisa disimpan.
+  Map<String, dynamic> toMap() {
+    return {
+      'meetings': {
+        for (final entry in meetings.entries)
+          entry.key.toString(): entry.value.toMap(),
+      },
+    };
+  }
 
   int get completedStageCount {
     return meetings.values.fold(

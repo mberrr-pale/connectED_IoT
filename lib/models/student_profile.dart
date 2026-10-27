@@ -1,4 +1,3 @@
-
 class StudentProfile {
   final String name;
   final String nis;

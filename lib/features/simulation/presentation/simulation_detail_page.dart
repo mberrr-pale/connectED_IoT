@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,9 +18,7 @@ class SimulationDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Studi Kasus • Pertemuan $meetingNumber'),
-      ),
+      appBar: AppBar(title: Text('Studi Kasus • Pertemuan $meetingNumber')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -37,9 +34,8 @@ class SimulationDetailPage extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             simulationCase.title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(simulationCase.description),
@@ -64,11 +60,9 @@ class SimulationDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 ...simulationCase.tasks.asMap().entries.map(
-                      (entry) => _TaskItem(
-                        number: '${entry.key + 1}',
-                        text: entry.value,
-                      ),
-                    ),
+                  (entry) =>
+                      _TaskItem(number: '${entry.key + 1}', text: entry.value),
+                ),
                 const SizedBox(height: 8),
                 const Divider(),
                 const SizedBox(height: 8),
@@ -151,10 +145,7 @@ class SimulationDetailPage extends StatelessWidget {
           const SizedBox(height: 20),
           const Text(
             'Pastikan hasil simulasi sesuai dengan target studi kasus.',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.grey, fontSize: 13),
           ),
         ],
       ),
@@ -203,35 +194,26 @@ class SimulationDetailPage extends StatelessWidget {
         (uri.scheme != 'https' && uri.scheme != 'http') ||
         uri.host != 'wokwi.com') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tautan Wokwi tidak valid.'),
-        ),
+        const SnackBar(content: Text('Tautan Wokwi tidak valid.')),
       );
       return;
     }
 
     try {
-      final opened = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
       if (!context.mounted) return;
 
       if (!opened) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Wokwi tidak dapat dibuka.'),
-          ),
+          const SnackBar(content: Text('Wokwi tidak dapat dibuka.')),
         );
       }
     } catch (_) {
       if (!context.mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Terjadi kesalahan saat membuka Wokwi.'),
-        ),
+        const SnackBar(content: Text('Terjadi kesalahan saat membuka Wokwi.')),
       );
     }
   }
@@ -241,10 +223,7 @@ class _TaskItem extends StatelessWidget {
   final String number;
   final String text;
 
-  const _TaskItem({
-    required this.number,
-    required this.text,
-  });
+  const _TaskItem({required this.number, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -325,9 +304,7 @@ class _StepItem extends StatelessWidget {
 class _CodeReference extends StatelessWidget {
   final String code;
 
-  const _CodeReference({
-    required this.code,
-  });
+  const _CodeReference({required this.code});
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_constants.dart';
@@ -10,10 +9,8 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> get routes {
     return {
-      AppConstants.splashRoute: (context) =>
-          const SplashScreen(),
-      AppConstants.homeRoute: (context) =>
-          const MainNavigation(),
+      AppConstants.splashRoute: (context) => const SplashScreen(),
+      AppConstants.homeRoute: (context) => const MainNavigation(),
     };
   }
 }

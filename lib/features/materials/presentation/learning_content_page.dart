@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -8,14 +7,10 @@ import '../models/lesson_section.dart';
 class LearningContentPage extends StatefulWidget {
   final int meetingNumber;
 
-  const LearningContentPage({
-    super.key,
-    required this.meetingNumber,
-  });
+  const LearningContentPage({super.key, required this.meetingNumber});
 
   @override
-  State<LearningContentPage> createState() =>
-      _LearningContentPageState();
+  State<LearningContentPage> createState() => _LearningContentPageState();
 }
 
 class _LearningContentPageState extends State<LearningContentPage> {
@@ -79,9 +74,7 @@ class _LearningContentPageState extends State<LearningContentPage> {
     if (step.isQuiz && !_answerChecked) {
       if (_selectedAnswer == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Pilih jawaban terlebih dahulu.'),
-          ),
+          const SnackBar(content: Text('Pilih jawaban terlebih dahulu.')),
         );
         return;
       }
@@ -92,13 +85,10 @@ class _LearningContentPageState extends State<LearningContentPage> {
       return;
     }
 
-    if (step.isQuiz &&
-        _selectedAnswer != step.correctAnswerIndex) {
+    if (step.isQuiz && _selectedAnswer != step.correctAnswerIndex) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Pelajari kembali penjelasannya sebelum melanjutkan.',
-          ),
+          content: Text('Pelajari kembali penjelasannya sebelum melanjutkan.'),
         ),
       );
       return;
@@ -135,9 +125,7 @@ class _LearningContentPageState extends State<LearningContentPage> {
     final progress = (_currentStep + 1) / _steps.length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Materi Pertemuan ${widget.meetingNumber}'),
-      ),
+      appBar: AppBar(title: Text('Materi Pertemuan ${widget.meetingNumber}')),
       body: Column(
         children: [
           Padding(
@@ -188,9 +176,7 @@ class _LearningContentPageState extends State<LearningContentPage> {
                 children: [
                   OutlinedButton(
                     onPressed: _previousStep,
-                    child: Text(
-                      _currentStep == 0 ? 'Keluar' : 'Sebelumnya',
-                    ),
+                    child: Text(_currentStep == 0 ? 'Keluar' : 'Sebelumnya'),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -200,8 +186,8 @@ class _LearningContentPageState extends State<LearningContentPage> {
                         _currentStep == _steps.length - 1
                             ? 'Selesaikan Materi'
                             : step.isQuiz && !_answerChecked
-                                ? 'Periksa Jawaban'
-                                : 'Berikutnya',
+                            ? 'Periksa Jawaban'
+                            : 'Berikutnya',
                       ),
                     ),
                   ),
@@ -226,23 +212,15 @@ class _LearningContentPageState extends State<LearningContentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(
-          Icons.menu_book_rounded,
-          size: 42,
-          color: AppColors.primary,
-        ),
+        const Icon(Icons.menu_book_rounded, size: 42, color: AppColors.primary),
         const SizedBox(height: 16),
         Text(
           step.title,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(context).textTheme.headlineSmall
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        Text(
-          step.content,
-          style: const TextStyle(fontSize: 16, height: 1.6),
-        ),
+        Text(step.content, style: const TextStyle(fontSize: 16, height: 1.6)),
       ],
     );
   }
@@ -260,10 +238,10 @@ class _LearningContentPageState extends State<LearningContentPage> {
           ),
         ),
         const SizedBox(height: 16),
-          Text(
-            section.content,
-            style: const TextStyle(fontSize: 16, height: 1.6),
-          ),
+        Text(
+          section.content,
+          style: const TextStyle(fontSize: 16, height: 1.6),
+        ),
         if (section.type == LessonSectionType.bulletList)
           ...section.bulletItems.map(
             (item) => Padding(
@@ -280,10 +258,7 @@ class _LearningContentPageState extends State<LearningContentPage> {
                   Expanded(
                     child: Text(
                       item,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        height: 1.5,
-                      ),
+                      style: const TextStyle(fontSize: 15, height: 1.5),
                     ),
                   ),
                 ],
@@ -312,10 +287,7 @@ class _LearningContentPageState extends State<LearningContentPage> {
           ),
           if (section.caption != null) ...[
             const SizedBox(height: 8),
-            Text(
-              section.caption!,
-              style: theme.textTheme.bodySmall,
-            ),
+            Text(section.caption!, style: theme.textTheme.bodySmall),
           ],
         ],
       ],
@@ -328,23 +300,15 @@ class _LearningContentPageState extends State<LearningContentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(
-          Icons.quiz_outlined,
-          size: 42,
-          color: AppColors.primary,
-        ),
+        const Icon(Icons.quiz_outlined, size: 42, color: AppColors.primary),
         const SizedBox(height: 16),
         Text(
           step.title,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(context).textTheme.headlineSmall
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        Text(
-          step.question!,
-          style: const TextStyle(fontSize: 17, height: 1.5),
-        ),
+        Text(step.question!, style: const TextStyle(fontSize: 17, height: 1.5)),
         const SizedBox(height: 20),
         for (int i = 0; i < step.options.length; i++)
           Padding(
@@ -364,15 +328,14 @@ class _LearningContentPageState extends State<LearningContentPage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: _answerChecked &&
-                            i == step.correctAnswerIndex
+                    color: _answerChecked && i == step.correctAnswerIndex
                         ? Colors.green
                         : _selectedAnswer == i
-                            ? AppColors.primary
-                            : Theme.of(context).dividerColor,
-                    width: _selectedAnswer == i ||
-                            (_answerChecked &&
-                                i == step.correctAnswerIndex)
+                        ? AppColors.primary
+                        : Theme.of(context).dividerColor,
+                    width:
+                        _selectedAnswer == i ||
+                            (_answerChecked && i == step.correctAnswerIndex)
                         ? 2
                         : 1,
                   ),
@@ -383,14 +346,12 @@ class _LearningContentPageState extends State<LearningContentPage> {
                 child: Row(
                   children: [
                     Icon(
-                      _answerChecked &&
-                              i == step.correctAnswerIndex
+                      _answerChecked && i == step.correctAnswerIndex
                           ? Icons.check_circle
                           : _selectedAnswer == i
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_unchecked,
-                      color: _answerChecked &&
-                              i == step.correctAnswerIndex
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                      color: _answerChecked && i == step.correctAnswerIndex
                           ? Colors.green
                           : AppColors.primary,
                     ),
@@ -398,10 +359,7 @@ class _LearningContentPageState extends State<LearningContentPage> {
                     Expanded(
                       child: Text(
                         step.options[i],
-                        style: const TextStyle(
-                          fontSize: 15,
-                          height: 1.4,
-                        ),
+                        style: const TextStyle(fontSize: 15, height: 1.4),
                       ),
                     ),
                   ],
@@ -442,13 +400,13 @@ class _MaterialStep {
   final String? explanation;
 
   const _MaterialStep.content(this.section)
-      : title = '',
-        content = '',
-        isQuiz = false,
-        question = null,
-        options = const [],
-        correctAnswerIndex = null,
-        explanation = null;
+    : title = '',
+      content = '',
+      isQuiz = false,
+      question = null,
+      options = const [],
+      correctAnswerIndex = null,
+      explanation = null;
 
   const _MaterialStep.quiz({
     required this.title,
@@ -456,17 +414,15 @@ class _MaterialStep {
     required this.options,
     required this.correctAnswerIndex,
     required this.explanation,
-  })  : section = null,
-        content = '',
-        isQuiz = true;
+  }) : section = null,
+       content = '',
+       isQuiz = true;
 
-  const _MaterialStep.notice({
-    required this.title,
-    required this.content,
-  })  : section = null,
-        isQuiz = false,
-        question = null,
-        options = const [],
-        correctAnswerIndex = null,
-        explanation = null;
+  const _MaterialStep.notice({required this.title, required this.content})
+    : section = null,
+      isQuiz = false,
+      question = null,
+      options = const [],
+      correctAnswerIndex = null,
+      explanation = null;
 }

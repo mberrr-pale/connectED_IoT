@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class PreTestPage extends StatefulWidget {
   final int meetingNumber;
 
-  const PreTestPage({
-    super.key,
-    required this.meetingNumber,
-  });
+  const PreTestPage({super.key, required this.meetingNumber});
 
   @override
   State<PreTestPage> createState() => _PreTestPageState();
@@ -25,6 +22,7 @@ class _PreTestPageState extends State<PreTestPage> {
         'Memasang kabel',
         'Mengisi baterai',
       ],
+      'correctAnswer': 0,
     },
     {
       'question': 'Apa kepanjangan dari IoT?',
@@ -34,6 +32,7 @@ class _PreTestPageState extends State<PreTestPage> {
         'Integration of Tools',
         'Internet of Technology',
       ],
+      'correctAnswer': 0,
     },
     {
       'question': 'Sensor dalam sistem IoT digunakan untuk...',
@@ -43,6 +42,7 @@ class _PreTestPageState extends State<PreTestPage> {
         'Mengisi daya perangkat',
         'Menghapus program',
       ],
+      'correctAnswer': 0,
     },
     {
       'question': 'Internet of Things menghubungkan perangkat agar dapat...',
@@ -52,15 +52,12 @@ class _PreTestPageState extends State<PreTestPage> {
         'Bertukar data melalui jaringan',
         'Bekerja tanpa listrik',
       ],
+      'correctAnswer': 2,
     },
     {
       'question': 'Perangkat yang dapat digunakan untuk membaca suhu adalah...',
-      'options': [
-        'Sensor suhu',
-        'Speaker',
-        'Monitor',
-        'Keyboard',
-      ],
+      'options': ['Sensor suhu', 'Speaker', 'Monitor', 'Keyboard'],
+      'correctAnswer': 0,
     },
     {
       'question': 'Data dari sensor dapat diproses oleh...',
@@ -70,6 +67,7 @@ class _PreTestPageState extends State<PreTestPage> {
         'Kabel biasa tanpa rangkaian',
         'Dudukan perangkat',
       ],
+      'correctAnswer': 0,
     },
     {
       'question': 'Salah satu contoh penerapan IoT adalah...',
@@ -79,15 +77,26 @@ class _PreTestPageState extends State<PreTestPage> {
         'Meja tanpa perangkat elektronik',
         'Kertas gambar',
       ],
+      'correctAnswer': 0,
     },
   ];
+
+  int _calculateScore() {
+    var correctAnswers = 0;
+
+    for (int i = 0; i < _questions.length; i++) {
+      if (_answers[i] == _questions[i]['correctAnswer']) {
+        correctAnswers++;
+      }
+    }
+
+    return (correctAnswers * 100 / _questions.length).round();
+  }
 
   void _nextQuestion() {
     if (_answers[_currentQuestion] == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pilih jawaban terlebih dahulu.'),
-        ),
+        const SnackBar(content: Text('Pilih jawaban terlebih dahulu.')),
       );
       return;
     }
@@ -97,7 +106,9 @@ class _PreTestPageState extends State<PreTestPage> {
         _currentQuestion++;
       });
     } else {
-      Navigator.pop(context, true);
+      final score = _calculateScore();
+
+      Navigator.pop(context, {'completed': true, 'score': score});
     }
   }
 
@@ -125,19 +136,13 @@ class _PreTestPageState extends State<PreTestPage> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 6,
-                ),
+                child: LinearProgressIndicator(value: progress, minHeight: 6),
               ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Pre-test',
-                    style: TextStyle(fontSize: 12),
-                  ),
+                  const Text('Pre-test', style: TextStyle(fontSize: 12)),
                   Text(
                     '${_currentQuestion + 1}/${_questions.length}',
                     style: const TextStyle(
@@ -159,11 +164,9 @@ class _PreTestPageState extends State<PreTestPage> {
               Expanded(
                 child: ListView.separated(
                   itemCount: options.length,
-                  separatorBuilder: (_, _) =>
-                      const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
-                    final isSelected =
-                        _answers[_currentQuestion] == index;
+                    final isSelected = _answers[_currentQuestion] == index;
 
                     return InkWell(
                       borderRadius: BorderRadius.circular(12),
@@ -182,10 +185,8 @@ class _PreTestPageState extends State<PreTestPage> {
                                 : Colors.grey.shade300,
                           ),
                           color: isSelected
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withValues(alpha: 0.08)
+                              ? Theme.of(context).colorScheme.primary
+                                    .withValues(alpha: 0.08)
                               : Colors.transparent,
                         ),
                         child: Row(

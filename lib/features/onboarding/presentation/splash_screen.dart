@@ -1,12 +1,29 @@
-
 import 'package:flutter/material.dart';
 
+import '../../../app/main_navigation.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../services/profile_storage.dart';
 import 'onboarding_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
+
+  Future<void> _startLearning(BuildContext context) async {
+    // Periksa apakah profil siswa sudah tersimpan.
+    final profile = await ProfileStorage.load();
+
+    if (!context.mounted) return;
+
+    final destination = profile != null
+        ? const MainNavigation()
+        : const OnboardingScreen();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => destination),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +70,7 @@ class SplashScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const OnboardingScreen(),
-                        )
-                      );
-                    },
+                    onPressed: () => _startLearning(context),
                     child: const Text('Mulai belajar'),
                   ),
                 ),

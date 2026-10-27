@@ -1,4 +1,3 @@
-
 class SimulationCase {
   final String id;
   final int meetingNumber;
@@ -29,8 +28,5 @@ class SimulationStep {
   final String title;
   final String description;
 
-  const SimulationStep({
-    required this.title,
-    required this.description,
-  });
+  const SimulationStep({required this.title, required this.description});
 }

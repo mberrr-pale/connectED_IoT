@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -63,22 +62,21 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
   Widget build(BuildContext context) {
     final stages = LearningStage.values;
     final completed = widget.progress.completedStages.length;
-    final objective = meetingLearningObjectives[widget.meetingNumber] ??
+    final objective =
+        meetingLearningObjectives[widget.meetingNumber] ??
         'Tujuan pembelajaran untuk pertemuan ini belum tersedia.';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pertemuan ${widget.meetingNumber}'),
-      ),
+      appBar: AppBar(title: Text('Pertemuan ${widget.meetingNumber}')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
             widget.meetingTitle,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 12),
           Container(
@@ -131,8 +129,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          for (int i = 0; i < stages.length; i++)
-            _buildStageTile(stages[i], i),
+          for (int i = 0; i < stages.length; i++) _buildStageTile(stages[i], i),
         ],
       ),
     );
@@ -144,9 +141,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
     final index = LearningStage.values.indexOf(stage);
     if (index == 0) return true;
 
-    return widget.progress.isStageCompleted(
-      LearningStage.values[index - 1],
-    );
+    return widget.progress.isStageCompleted(LearningStage.values[index - 1]);
   }
 
   String _getStageSubtitle(
@@ -191,15 +186,13 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
             isCompleted
                 ? Icons.check_circle_rounded
                 : isStageAvailable
-                    ? Icons.play_arrow_rounded
-                    : Icons.lock_outline_rounded,
+                ? Icons.play_arrow_rounded
+                : Icons.lock_outline_rounded,
             color: isCompleted ? AppColors.primary : AppColors.textMuted,
           ),
         ),
         title: Text(stage.label),
-        subtitle: Text(
-          _getStageSubtitle(stage, isCompleted, isStageAvailable),
-        ),
+        subtitle: Text(_getStageSubtitle(stage, isCompleted, isStageAvailable)),
         trailing: const Icon(Icons.chevron_right_rounded),
         enabled: isStageAvailable,
         onTap: isStageAvailable ? () => _openStage(stage) : null,
@@ -220,19 +213,21 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
     }
 
     if (stage == LearningStage.preTest) {
-      final completed = await Navigator.push<bool>(
+      final result = await Navigator.push<Map<String, dynamic>>(
         context,
         MaterialPageRoute(
-          builder: (_) => PreTestPage(
-            meetingNumber: widget.meetingNumber,
-          ),
+          builder: (_) => PreTestPage(meetingNumber: widget.meetingNumber),
         ),
       );
 
-      if (completed == true && mounted) {
+      if (result != null && result['completed'] == true && mounted) {
+        final score = result['score'] as int;
+
         setState(() {
+          widget.progress.recordPreTestResult(score: score);
           widget.progress.completeStage(LearningStage.preTest);
         });
+
         widget.onProgressChanged();
       }
       return;
@@ -242,9 +237,8 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
       final completed = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
-          builder: (_) => LearningContentPage(
-            meetingNumber: widget.meetingNumber,
-          ),
+          builder: (_) =>
+              LearningContentPage(meetingNumber: widget.meetingNumber),
         ),
       );
 
@@ -261,9 +255,8 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
       final completed = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
-          builder: (_) => LearningVideoPage(
-            meetingNumber: widget.meetingNumber,
-          ),
+          builder: (_) =>
+              LearningVideoPage(meetingNumber: widget.meetingNumber),
         ),
       );
 
@@ -282,10 +275,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
     }
 
     if (stage == LearningStage.reflection) {
-      await _openReflection(
-        questions: _lastQuestions,
-        answers: _lastAnswer,
-      );
+      await _openReflection(questions: _lastQuestions, answers: _lastAnswer);
       return;
     }
 
@@ -308,7 +298,8 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
         });
         widget.onProgressChanged();
 
-        final meetingComplete = widget.progress.passedPostTest &&
+        final meetingComplete =
+            widget.progress.passedPostTest &&
             LearningStage.values.every(
               (item) => widget.progress.isStageCompleted(item),
             );
@@ -332,9 +323,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
 
       final result = await navigator.push<Map<String, dynamic>>(
         MaterialPageRoute(
-          builder: (_) => PostTestPage(
-            meetingNumber: widget.meetingNumber,
-          ),
+          builder: (_) => PostTestPage(meetingNumber: widget.meetingNumber),
         ),
       );
 
@@ -342,8 +331,9 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
 
       final score = result['score'] as int;
       final answers = List<int?>.from(result['answers'] as List);
-      final questions =
-          List<Map<String, dynamic>>.from(result['questions'] as List);
+      final questions = List<Map<String, dynamic>>.from(
+        result['questions'] as List,
+      );
 
       setState(() {
         widget.progress.recordPostTestResult(score: score);
@@ -371,16 +361,16 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
                 Text(
                   passed
                       ? 'Selamat! Kamu memenuhi nilai minimum '
-                          '${MeetingProgress.passingScore} dan dapat '
-                          'melanjutkan ke Refleksi.'
+                            '${MeetingProgress.passingScore} dan dapat '
+                            'melanjutkan ke Refleksi.'
                       : requiresReview
-                          ? 'Kamu belum mencapai nilai minimum '
-                              '${MeetingProgress.passingScore}. '
-                              'Silakan pelajari kembali Materi dan tonton '
-                              'Video sebelum mencoba Post-test lagi.'
-                          : 'Nilai minimum kelulusan adalah '
-                              '${MeetingProgress.passingScore}. '
-                              'Kamu masih memiliki satu kesempatan lagi.',
+                      ? 'Kamu belum mencapai nilai minimum '
+                            '${MeetingProgress.passingScore}. '
+                            'Silakan pelajari kembali Materi dan tonton '
+                            'Video sebelum mencoba Post-test lagi.'
+                      : 'Nilai minimum kelulusan adalah '
+                            '${MeetingProgress.passingScore}. '
+                            'Kamu masih memiliki satu kesempatan lagi.',
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -415,10 +405,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
 
       if (passed) {
         if (retryNow == false) {
-          await _openReflection(
-            questions: questions,
-            answers: answers,
-          );
+          await _openReflection(questions: questions, answers: answers);
         }
         return;
       }
@@ -434,10 +421,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
     final completed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => ReflectionPage(
-          questions: questions,
-          answers: answers,
-        ),
+        builder: (_) => ReflectionPage(questions: questions, answers: answers),
       ),
     );
 

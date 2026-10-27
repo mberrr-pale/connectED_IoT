@@ -25,19 +25,33 @@ class MeetingMapCard extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: AppColors.blueLight,
           foregroundColor: AppColors.primary,
-          child: Text('$number', style: const TextStyle(fontWeight: FontWeight.bold)),
+          child: Text(
+            '$number',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.text),
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.text,
+          ),
         ),
-        subtitle: Text(subtitle, style: const TextStyle(color: AppColors.secondary)),
-        trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.secondary),
-        onTap: onTap ?? () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$title akan dikembangkan berikutnya.')),
-          );
-        },
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(color: AppColors.secondary),
+        ),
+        trailing: const Icon(
+          Icons.chevron_right_rounded,
+          color: AppColors.secondary,
+        ),
+        onTap:
+            onTap ??
+            () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('$title akan dikembangkan berikutnya.')),
+              );
+            },
       ),
     );
   }

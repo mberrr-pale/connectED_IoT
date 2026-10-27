@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class ReflectionPage extends StatelessWidget {
@@ -26,17 +25,14 @@ class ReflectionPage extends StatelessWidget {
     }).length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Refleksi Pembelajaran'),
-      ),
+      appBar: AppBar(title: const Text('Refleksi Pembelajaran')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
             'Pembahasan Post-test',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -59,9 +55,7 @@ class ReflectionPage extends StatelessWidget {
                         const Text('Hasil jawabanmu'),
                         Text(
                           '$correctCount dari ${questions.length} soal benar',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
+                          style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -96,11 +90,9 @@ class ReflectionPage extends StatelessWidget {
     final options = List<String>.from(question['options'] as List);
     final correctAnswer = question['correctAnswer'] as int;
 
-    final selectedAnswer =
-        index < answers.length ? answers[index] : null;
+    final selectedAnswer = index < answers.length ? answers[index] : null;
 
-    final isCorrect =
-        selectedAnswer != null && selectedAnswer == correctAnswer;
+    final isCorrect = selectedAnswer != null && selectedAnswer == correctAnswer;
 
     final statusColor = isCorrect
         ? const Color(0xFF16834A)
@@ -113,8 +105,8 @@ class ReflectionPage extends StatelessWidget {
     final answerText = selectedAnswer == null
         ? 'Jawabanmu: Belum dijawab'
         : 'Jawabanmu: '
-            '${String.fromCharCode(65 + selectedAnswer)}. '
-            '${options[selectedAnswer]}';
+              '${String.fromCharCode(65 + selectedAnswer)}. '
+              '${options[selectedAnswer]}';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -129,9 +121,7 @@ class ReflectionPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Soal ${index + 1}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
+                    style: Theme.of(context).textTheme.titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -213,19 +203,14 @@ class ReflectionPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Rangkuman Pembelajaran',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
+                    style: Theme.of(context).textTheme.titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            const Text(
-              _summary,
-              style: TextStyle(height: 1.6),
-            ),
+            const Text(_summary, style: TextStyle(height: 1.6)),
           ],
         ),
       ),

@@ -1,4 +1,3 @@
-
 import '../models/simulation_case.dart';
 
 const List<SimulationCase> simulationCases = [
@@ -99,13 +98,11 @@ void loop() {
     steps: [
       SimulationStep(
         title: 'Siapkan rangkaian',
-        description:
-            'Tambahkan ESP32 dan LED, lalu periksa hubungan pin.',
+        description: 'Tambahkan ESP32 dan LED, lalu periksa hubungan pin.',
       ),
       SimulationStep(
         title: 'Atur pin output',
-        description:
-            'Gunakan pinMode() untuk menetapkan GPIO sebagai OUTPUT.',
+        description: 'Gunakan pinMode() untuk menetapkan GPIO sebagai OUTPUT.',
       ),
       SimulationStep(
         title: 'Atur kondisi LED',
@@ -115,8 +112,7 @@ void loop() {
       ),
       SimulationStep(
         title: 'Uji program',
-        description:
-            'Jalankan simulasi dan amati perubahan kondisi LED.',
+        description: 'Jalankan simulasi dan amati perubahan kondisi LED.',
       ),
     ],
     code: '''
