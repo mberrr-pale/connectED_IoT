@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../models/learning_progress.dart';
 import '../../../widgets/app_page_header.dart';
+import '../../../services/profile_storage.dart';
 
 class ResultsPage extends StatelessWidget {
   final LearningProgress progress;
@@ -58,6 +60,7 @@ class ResultsPage extends StatelessWidget {
                     final meeting = progress.meetings[number]!;
 
                     return _buildMeetingResult(
+                      context: context,
                       number: number,
                       meeting: meeting,
                     );
@@ -71,9 +74,86 @@ class ResultsPage extends StatelessWidget {
     );
   }
 
-  
+  // QR CODE DARI PROFILE STORAGE
+
+  Future<void> _showMeetingQrCode(
+    BuildContext context,
+    int number,
+    MeetingProgress meeting,
+  ) async {
+    final student = await ProfileStorage.load();
+    final preTest = meeting.preTestScore;
+    final postTest = meeting.firstPostTestScore;
+    final bestPostTest = meeting.bestPostTestScore;
+
+    final nGain = _calculateNGain(preTest, postTest);
+    final nGainCategory = _getNGainCategory(preTest, postTest, nGain);
+
+    if (!context.mounted) return;
+
+    if (student == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Data profil siswa belum tersedia. Silakan lengkapi profil.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final qrData =
+        '''${student.name}//${student.nis}//${student.studentClass}//${student.school}//Pertemuan $number//$preTest//$postTest//$bestPostTest//$nGain//$nGainCategory'''
+            .trim();
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text('QR Code Pertemuan $number', textAlign: TextAlign.center),
+          content: SizedBox(
+            width: 280,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 220,
+                  height: 220,
+                  child: QrImageView(
+                    data: qrData,
+                    version: QrVersions.auto,
+                    size: 220,
+                    backgroundColor: Colors.white,
+                    errorCorrectionLevel: QrErrorCorrectLevel.M,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Tunjukkan QR Code ke pengajar',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Tutup'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildProgressCard(int completed, int total, double rate) {
     final percentage = (rate * 100).round();
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -164,6 +244,7 @@ class ResultsPage extends StatelessWidget {
   }
 
   Widget _buildMeetingResult({
+    required BuildContext context,
     required int number,
     required MeetingProgress meeting,
   }) {
@@ -179,13 +260,36 @@ class ResultsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Pertemuan $number',
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Pertemuan $number',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => _showMeetingQrCode(context, number, meeting),
+                  icon: const Icon(Icons.qr_code_rounded, size: 20),
+                  label: const Text('Bagikan Hasil'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
 

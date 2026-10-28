@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import 'student_identity_screen.dart';
+import 'teacher_identity_screen.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -60,22 +61,10 @@ class RoleSelectionScreen extends StatelessWidget {
               color: AppColors.violet,
               backgroundColor: AppColors.violetLight,
               onTap: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    title: const Text('Mode Guru'),
-                    content: const Text(
-                      'Halaman guru akan kita hubungkan pada '
-                      'tahap berikutnya.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(dialogContext);
-                        },
-                        child: const Text('Mengerti'),
-                      ),
-                    ],
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const TeacherIdentityScreen(),
                   ),
                 );
               },
