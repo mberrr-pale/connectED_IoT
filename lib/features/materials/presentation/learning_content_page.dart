@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../data/meeting_1_material.dart';
 import '../models/lesson_section.dart';
+import '../data/material/meeting_1_material.dart';
+import '../data/material/meeting_2_material.dart';
+import '../data/material/meeting_3_material.dart';
+import '../data/material/meeting_4_material.dart';
 
 class LearningContentPage extends StatefulWidget {
   final int meetingNumber;
@@ -24,36 +27,13 @@ class _LearningContentPageState extends State<LearningContentPage> {
   void initState() {
     super.initState();
 
-    _steps = widget.meetingNumber == 1
-        ? _buildMeetingOneSteps()
-        : _buildPlaceholderSteps();
-  }
-
-  List<_MaterialStep> _buildMeetingOneSteps() {
-    final sections = meeting1Sections;
-
-    return [
-      _MaterialStep.content(sections[0]),
-      _MaterialStep.content(sections[1]),
-      const _MaterialStep.quiz(
-        title: 'Cek pemahaman IoT',
-        question: 'Apa fungsi utama sistem Internet of Things?',
-        options: [
-          'Menghubungkan perangkat untuk bertukar data',
-          'Menggantikan semua perangkat keras',
-          'Menjalankan program tanpa perangkat',
-          'Menyimpan data hanya di layar',
-        ],
-        correctAnswerIndex: 0,
-        explanation:
-            'IoT memungkinkan perangkat terhubung untuk '
-            'mengumpulkan, mengirim, dan bertukar data.',
-      ),
-      _MaterialStep.content(sections[2]),
-      _MaterialStep.content(sections[3]),
-      _MaterialStep.content(sections[4]),
-      _MaterialStep.content(sections[5]),
-    ];
+    _steps = switch (widget.meetingNumber) {
+      1 => _buildMeetingOneSteps(),
+      2 => _buildMeetingTwoSteps(),
+      3 => _buildMeetingThreeSteps(),
+      4 => _buildMeetingFourSteps(),
+      _ => _buildPlaceholderSteps(),
+    };
   }
 
   List<_MaterialStep> _buildPlaceholderSteps() {
@@ -66,6 +46,132 @@ class _LearningContentPageState extends State<LearningContentPage> {
             'melalui halaman ini.',
       ),
     ];
+  }
+
+  List<_MaterialStep> _buildMeetingOneSteps() {
+    final sections = meeting1Sections;
+    final steps = <_MaterialStep>[];
+
+    for (var i = 0; i < sections.length; i++) {
+      steps.add(_MaterialStep.content(sections[i]));
+
+      if (sections[i].title == 'Pengertian dan Fungsi Mikrokontroler') {
+        steps.add(
+          const _MaterialStep.quiz(
+            title: 'Cek Pemahaman Pertemuan 1',
+            question: 'Apa fungsi utama mikrokontroler dalam sistem IoT?',
+            options: [
+              'Mendeteksi suhu dan kelembapan secara langsung',
+              'Menampilkan data monitoring dalam bentuk grafik',
+              'Menjalankan program untuk memproses data dan mengendalikan komponen',
+              'Menyimpan seluruh data monitoring ke dalam cloud',
+            ],
+            correctAnswerIndex: 2,
+            explanation:
+                'Mikrokontroler berfungsi menjalankan program untuk '
+                'menerima masukan, memproses data, dan mengendalikan '
+                'komponen lain. Contohnya, ESP32 dapat membaca data '
+                'dari sensor dan mengirimkannya melalui jaringan Wi-Fi.',
+          ),
+        );
+      }
+    }
+
+    return steps;
+  }
+
+  List<_MaterialStep> _buildMeetingTwoSteps() {
+    final sections = meeting2Sections;
+    final steps = <_MaterialStep>[];
+
+    for (var i = 0; i < sections.length; i++) {
+      steps.add(_MaterialStep.content(sections[i]));
+
+      if (sections[i].title == 'Sensor yang Digunakan dalam Proyek') {
+        steps.add(
+          const _MaterialStep.quiz(
+            title: 'Cek Pemahaman Pertemuan 2',
+            question: 'Sensor manakah yang digunakan untuk mengukur suhu dan kelembapan udara?',
+            options: [
+              'Sensor LDR',
+              'Sensor PIR',
+              'Sensor DHT22',
+              'Sensor HC-SR04',
+            ],
+            correctAnswerIndex: 2,
+            explanation:
+                'DHT22 digunakan untuk membaca suhu dan kelembapan '
+                'udara. LDR mendeteksi cahaya, PIR mendeteksi gerakan, '
+                'sedangkan HC-SR04 digunakan untuk mengukur jarak.',
+          ),
+        );
+      }
+    }
+
+    return steps;
+  }
+
+  List<_MaterialStep> _buildMeetingThreeSteps() {
+    final sections = meeting3Sections;
+    final steps = <_MaterialStep>[];
+
+    for (var i = 0; i < sections.length; i++) {
+      steps.add(_MaterialStep.content(sections[i]));
+
+      if (sections[i].title == 'Perbedaan HTTP dan MQTT') {
+        steps.add(
+          const _MaterialStep.quiz(
+            title: 'Cek Pemahaman Pertemuan 3',
+            question: 'Apa perbedaan utama antara HTTP dan MQTT dalam komunikasi IoT?',
+            options: [
+              'HTTP menggunakan broker, sedangkan MQTT menggunakan endpoint web.',
+              'HTTP menggunakan pola permintaan dan respons, sedangkan MQTT menggunakan publish-subscribe.',
+              'HTTP hanya mengirim data sensor, sedangkan MQTT hanya menerima data.',
+              'HTTP tidak membutuhkan konfigurasi, sedangkan MQTT membutuhkannya.',
+            ],
+            correctAnswerIndex: 1,
+            explanation:
+                'HTTP menggunakan pola permintaan dan respons, '
+                'sedangkan MQTT menggunakan mekanisme publish-subscribe '
+                'melalui broker. Keduanya perlu disesuaikan dengan '
+                'konfigurasi layanan penerima.',
+          ),
+        );
+      }
+    }
+
+    return steps;
+  }
+
+  List<_MaterialStep> _buildMeetingFourSteps() {
+    final sections = meeting4Sections;
+    final steps = <_MaterialStep>[];
+
+    for (var i = 0; i < sections.length; i++) {
+      steps.add(_MaterialStep.content(sections[i]));
+
+      if (sections[i].title == 'Bentuk Penyajian Data') {
+        steps.add(
+          const _MaterialStep.quiz(
+            title: 'Cek Pemahaman Pertemuan 4',
+            question: 'Apa fungsi utama dashboard monitoring dalam sistem IoT?',
+            options: [
+              'Mengubah sensor menjadi perangkat mikrokontroler.',
+              'Menampilkan data agar kondisi sistem mudah diamati.',
+              'Menggantikan koneksi antara perangkat dan cloud.',
+              'Mengirim data tanpa membutuhkan perangkat IoT.',
+            ],
+            correctAnswerIndex: 1,
+            explanation:
+                'Dashboard monitoring menampilkan data dari perangkat '
+                'atau layanan cloud sehingga pengguna dapat mengamati '
+                'kondisi sistem dan perubahan data dari waktu ke waktu.',
+          ),
+        );
+      }
+    }
+
+    return steps;
   }
 
   void _nextStep() {
@@ -212,13 +318,7 @@ class _LearningContentPageState extends State<LearningContentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.menu_book_rounded, size: 42, color: AppColors.primary),
-        const SizedBox(height: 16),
-        Text(
-          step.title,
-          style: Theme.of(context).textTheme.headlineSmall
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        Text(step.title, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 12),
         Text(step.content, style: const TextStyle(fontSize: 16, height: 1.6)),
       ],

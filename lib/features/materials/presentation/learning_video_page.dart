@@ -11,19 +11,48 @@ class LearningVideoPage extends StatefulWidget {
 }
 
 class _LearningVideoPageState extends State<LearningVideoPage> {
-  late final YoutubePlayerController _controller =
-      YoutubePlayerController.fromVideoId(
+  late final String _videoTitle;
+  late final String _videoId;
+  late final YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final video = _getVideoData(widget.meetingNumber);
+
+    _videoTitle = video.title;
+    _videoId = video.videoId;
+
+    _controller = YoutubePlayerController.fromVideoId(
+      videoId: _videoId,
+      autoPlay: false,
+      params: const YoutubePlayerParams(
+        showControls: true,
+        showFullscreenButton: true,
+        strictRelatedVideos: true,
+        interfaceLanguage: 'id',
+        captionLanguage: 'id',
+        loop: false,
+      ),
+    );
+  }
+
+  ({String title, String videoId}) _getVideoData(int meetingNumber) {
+    return switch (meetingNumber) {
+      1 => (
+        title: 'Apa itu teknologi IoT? | TIAnimate',
         videoId: 'n-f8B76Hozk',
-        autoPlay: false,
-        params: const YoutubePlayerParams(
-          showControls: true,
-          showFullscreenButton: true,
-          strictRelatedVideos: true,
-          interfaceLanguage: 'id',
-          captionLanguage: 'id',
-          loop: false,
-        ),
-      );
+      ),
+      2 => (title: 'What is MQTT and How It Works', videoId: 'EIxdz-2rhLs'),
+      3 => (title: 'What Is Arduino Cloud?', videoId: '27S-XI_zHQc'),
+      4 => (
+        title: 'IoT Sederhana: Dari Sensor ke Dashboard',
+        videoId: '_Yfehz8Yh6s',
+      ),
+      _ => (title: 'Video belum tersedia', videoId: 'n-f8B76Hozk'),
+    };
+  }
 
   @override
   void dispose() {
@@ -39,18 +68,21 @@ class _LearningVideoPageState extends State<LearningVideoPage> {
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'Video Pembelajaran Pertemuan ${widget.meetingNumber}',
+            _videoTitle,
             style: Theme.of(context).textTheme.titleLarge
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Video Pembelajaran Pertemuan ${widget.meetingNumber}',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
 
-          // Pemutar YouTube.
           YoutubePlayer(controller: _controller, aspectRatio: 16 / 9),
 
           const SizedBox(height: 20),
 
-          // Status dan tombol mengikuti status pemutar.
           YoutubeValueBuilder(
             controller: _controller,
             builder: (context, value) {

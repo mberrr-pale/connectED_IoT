@@ -18,7 +18,6 @@ class MeetingDetailPage extends StatefulWidget {
   final VoidCallback onProgressChanged;
   final VoidCallback onOpenSimulation;
 
-  // Jika diisi, halaman langsung membuka tahap yang dipilih.
   final LearningStage? initialStage;
 
   const MeetingDetailPage({
@@ -39,8 +38,10 @@ class MeetingDetailPage extends StatefulWidget {
 class _MeetingDetailPageState extends State<MeetingDetailPage> {
   bool _initialStageOpened = false;
 
-  List<Map<String, dynamic>> _lastQuestions = [];
-  List<int?> _lastAnswer = [];
+  List<Map<String, dynamic>> get _lastQuestions =>
+      widget.progress.lastPostTestQuestions;
+  List<int?> get _lastAnswer =>
+      widget.progress.lastPostTestAnswers;
 
   @override
   void didChangeDependencies() {
@@ -275,12 +276,14 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
     }
 
     if (stage == LearningStage.reflection) {
-      await _openReflection(questions: _lastQuestions, answers: _lastAnswer);
+      await _openReflection(
+        questions: _lastQuestions, 
+        answers: _lastAnswer);
       return;
     }
 
     if (stage == LearningStage.preview) {
-      final completed = await Navigator.push<bool>(
+      final openSimulation = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
           builder: (_) => PreviewPage(
@@ -292,26 +295,21 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
         ),
       );
 
-      if (completed == true && mounted) {
+      if (!mounted) return;
+
+      if (openSimulation == true) {
         setState(() {
           widget.progress.completeStage(LearningStage.preview);
         });
         widget.onProgressChanged();
 
-        final meetingComplete =
-            widget.progress.passedPostTest &&
-            LearningStage.values.every(
-              (item) => widget.progress.isStageCompleted(item),
-            );
+        // Pindah ke tab Simulasi.
+        widget.onOpenSimulation();
 
-        if (widget.meetingNumber == 1 && meetingComplete) {
-          widget.onOpenSimulation();
-
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        }
+        // Tutup halaman detail pertemuan.
+        Navigator.pop(context);
       }
+      return;
     }
   }
 
@@ -337,8 +335,8 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
 
       setState(() {
         widget.progress.recordPostTestResult(score: score);
-        _lastQuestions = questions;
-        _lastAnswer = answers;
+        widget.progress.lastPostTestQuestions = questions;
+        widget.progress.lastPostTestAnswers = answers;
       });
       widget.onProgressChanged();
 
@@ -421,7 +419,11 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
     final completed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => ReflectionPage(questions: questions, answers: answers),
+        builder: (_) => ReflectionPage(
+          meetingNumber: widget.meetingNumber,
+          questions: questions,
+          answers: answers,
+        ),
       ),
     );
 

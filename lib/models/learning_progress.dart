@@ -18,6 +18,9 @@ class MeetingProgress {
   final int meetingNumber;
   final Set<LearningStage> completedStages = {};
 
+  List<Map<String, dynamic>> lastPostTestQuestions = [];
+  List<int?> lastPostTestAnswers = [];
+
   int? preTestScore;
   int? firstPostTestScore;
   int? bestPostTestScore;
@@ -28,7 +31,6 @@ class MeetingProgress {
 
   MeetingProgress({required this.meetingNumber});
 
-  // Memulihkan progres pertemuan dari data tersimpan.
   MeetingProgress.fromMap(Map<String, dynamic> map)
     : meetingNumber = (map['meetingNumber'] as num?)?.toInt() ?? 1 {
     final savedStages = map['completedStages'];
@@ -57,9 +59,25 @@ class MeetingProgress {
 
     _materialReviewedAfterFailure =
         map['materialReviewedAfterFailure'] as bool? ?? false;
+
+    final savedQuestions = map['lastPostTestQuestions'];
+
+    if (savedQuestions is List) {
+      lastPostTestQuestions = savedQuestions
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+
+    final savedAnswers = map['lastPostTestAnswers'];
+
+    if (savedAnswers is List) {
+      lastPostTestAnswers = savedAnswers.map<int?>((answer) {
+        return answer is num ? answer.toInt() : null;
+      }).toList();
+    }
   }
 
-  // Mengubah progres pertemuan menjadi data yang bisa disimpan.
   Map<String, dynamic> toMap() {
     return {
       'meetingNumber': meetingNumber,
@@ -70,6 +88,8 @@ class MeetingProgress {
       'attemptsInCurrentRound': attemptsInCurrentRound,
       'requiresReview': requiresReview,
       'materialReviewedAfterFailure': _materialReviewedAfterFailure,
+      'lastPostTestQuestions': lastPostTestQuestions,
+      'lastPostTestAnswers': lastPostTestAnswers,
     };
   }
 
@@ -116,8 +136,6 @@ class MeetingProgress {
 
       completedStages.add(LearningStage.video);
 
-      // Materi dan video sudah diulang.
-      // Buka putaran Post-test berikutnya.
       attemptsInCurrentRound = 0;
       requiresReview = false;
       _materialReviewedAfterFailure = false;
@@ -190,7 +208,6 @@ class LearningProgress {
           i: MeetingProgress(meetingNumber: i),
       };
 
-  // Memulihkan semua pertemuan dari data tersimpan.
   LearningProgress.fromMap(Map<String, dynamic> map)
     : meetings = _meetingsFromMap(map['meetings']);
 
@@ -219,7 +236,6 @@ class LearningProgress {
     return result;
   }
 
-  // Mengubah semua progres menjadi data yang bisa disimpan.
   Map<String, dynamic> toMap() {
     return {
       'meetings': {

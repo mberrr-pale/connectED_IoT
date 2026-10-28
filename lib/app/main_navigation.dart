@@ -1,7 +1,6 @@
 import 'package:connected_iot/services/learning_progress_storage.dart';
 import 'package:flutter/material.dart';
 
-import '../core/theme/app_colors.dart';
 import '../features/home/presentation/home_page.dart';
 import '../features/home/presentation/meeting_detail_page.dart';
 import '../features/materials/presentation/materials_page.dart';
@@ -29,7 +28,6 @@ class _MainNavigationState extends State<MainNavigation> {
     _loadProgress();
   }
 
-  //Memuat progress yang pernah disimpan.
   Future<void> _loadProgress() async {
     try {
       final savedProgress = await LearningProgressStorage.load();
@@ -137,9 +135,7 @@ class _MainNavigationState extends State<MainNavigation> {
           });
         },
       ),
-      _isSimulationUnlocked
-          ? const SimulationPage(meetingNumber: 1)
-          : const _LockedSimulationPage(),
+      SimulationPage(progress: _progress),
       ResultsPage(progress: _progress),
       const ProfilePage(),
     ];
@@ -191,46 +187,6 @@ class _MainNavigationState extends State<MainNavigation> {
             label: 'Profil',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LockedSimulationPage extends StatelessWidget {
-  const _LockedSimulationPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Simulasi')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.lock_outline_rounded,
-                size: 56,
-                color: AppColors.textSecondary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Simulasi Belum Terbuka',
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Selesaikan keenam tahap Pertemuan 1, '
-                'termasuk Post-test, Refleksi, dan Preview, '
-                'untuk membuka Simulasi.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
