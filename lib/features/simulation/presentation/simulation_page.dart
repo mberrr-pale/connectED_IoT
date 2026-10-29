@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
-import '../../../models/learning_progress.dart';
 import '../../../widgets/app_page_header.dart';
 import '../data/simulation_cases.dart';
 import '../models/simulation_case.dart';

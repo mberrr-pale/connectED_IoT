@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../widgets/app_page_header.dart';
+import '../../simulation/data/simulation_cases.dart';
+import '../../simulation/presentation/simulation_detail_page.dart';
 
 class TeacherMaterialsPage extends StatelessWidget {
   final ValueChanged<int> onOpenMeeting;
 
   const TeacherMaterialsPage({super.key, required this.onOpenMeeting});
+
   static const List<_MeetingInfo> _meetings = [
     _MeetingInfo(
       title: 'Mengenal Internet of Things',
@@ -80,7 +83,6 @@ class TeacherMaterialsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const SizedBox(height: 22),
                   ...List.generate(
                     _meetings.length,
                     (index) => Padding(
@@ -88,6 +90,7 @@ class TeacherMaterialsPage extends StatelessWidget {
                       child: _buildMeetingCard(context, index),
                     ),
                   ),
+                  _buildSimulationCaseCard(context),
                 ],
               ),
             ),
@@ -107,9 +110,7 @@ class TeacherMaterialsPage extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () {
-          onOpenMeeting(meetingNumber);
-        },
+        onTap: () => onOpenMeeting(meetingNumber),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
@@ -175,6 +176,118 @@ class TeacherMaterialsPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSimulationCaseCard(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: theme.colorScheme.surface,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => _showSimulationCases(context),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Row(
+            children: [
+              Container(
+                width: 76,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                color: const Color(0xFFF3E8FF),
+                child: const Icon(
+                  Icons.science_rounded,
+                  color: Color(0xFF7C3AED),
+                  size: 28,
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Studi Kasus Simulasi',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Pelajari skenario dan analisis penerapan IoT.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 17,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSimulationCases(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: SizedBox(
+            height: MediaQuery.of(sheetContext).size.height * 0.85,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  'Pilih Studi Kasus',
+                  style: Theme.of(sheetContext).textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                ...simulationCases.map(
+                  (simulationCase) => ListTile(
+                    leading: const Icon(Icons.science_rounded),
+                    title: Text(simulationCase.title),
+                    subtitle: Text('Pertemuan ${simulationCase.meetingNumber}'),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) => SimulationDetailPage(
+                            meetingNumber: simulationCase.meetingNumber,
+                            simulationCase: simulationCase,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

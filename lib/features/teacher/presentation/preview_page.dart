@@ -8,11 +8,13 @@ import '../../simulation/services/final_project_storage.dart';
 class PreviewPage extends StatefulWidget {
   final int meetingNumber;
   final VoidCallback? onOpenSimulation;
+  final bool showSimulationButton;
 
   const PreviewPage({
     super.key,
     required this.meetingNumber,
     this.onOpenSimulation,
+    this.showSimulationButton = true,
   });
 
   @override
@@ -169,11 +171,12 @@ class _PreviewPageState extends State<PreviewPage> {
           ),
           const SizedBox(height: 24),
 
-          _buildSimulationButton(
-            title: 'Siap untuk praktik?',
-            description: content.simulationInstruction,
-            buttonLabel: 'Buka Simulasi Pertemuan ${widget.meetingNumber}',
-          ),
+          if (widget.showSimulationButton)
+            _buildSimulationButton(
+              title: 'Siap untuk praktik?',
+              description: content.simulationInstruction,
+              buttonLabel: 'Buka Simulasi Pertemuan ${widget.meetingNumber}',
+            ),
         ],
       ),
     );
@@ -307,13 +310,14 @@ class _PreviewPageState extends State<PreviewPage> {
                 }),
 
                 const SizedBox(height: 20),
-                _buildSimulationButton(
-                  title: 'Siap menguji proyek?',
-                  description:
-                      'Buka simulasi Pertemuan 4 untuk mengerjakan '
-                      'proyek akhir dan menguji sistem monitoring.',
-                  buttonLabel: 'Buka Simulasi Pertemuan 4',
-                ),
+                if (widget.showSimulationButton)
+                  _buildSimulationButton(
+                    title: 'Siap menguji proyek?',
+                    description:
+                        'Buka simulasi Pertemuan 4 untuk mengerjakan '
+                        'proyek akhir dan menguji sistem monitoring.',
+                    buttonLabel: 'Buka Simulasi Pertemuan 4',
+                  ),
               ],
             ),
     );

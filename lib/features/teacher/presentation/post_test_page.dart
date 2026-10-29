@@ -92,76 +92,84 @@ class _PostTestPageState extends State<PostTestPage> {
                           const SizedBox(height: 16),
 
                           // Semua opsi jawaban
-                          ...List.generate(options.length, (optionIndex) {
-                            final isCorrect = optionIndex == correctAnswer;
+                          RadioGroup<int>(
+                            groupValue: selectedAnswer,
+                            onChanged: (value) {
+                              setState(() {
+                                _answers[questionIndex] = value;
+                              });
+                            },
+                            child: Column(
+                              children: List.generate(options.length, (
+                                optionIndex,
+                              ) {
+                                final isCorrect =
+                                    optionIndex == correctAnswer;
+                                final isSelected =
+                                    optionIndex == selectedAnswer;
 
-                            final isSelected = optionIndex == selectedAnswer;
+                                final borderColor = isCorrect
+                                    ? Colors.green
+                                    : isSelected
+                                    ? Colors.red
+                                    : Colors.grey.shade300;
 
-                            final borderColor = isCorrect
-                                ? Colors.green
-                                : isSelected
-                                ? Colors.red
-                                : Colors.grey.shade300;
+                                final backgroundColor = isCorrect
+                                    ? Colors.green.withValues(alpha: 0.08)
+                                    : isSelected
+                                    ? Colors.red.withValues(alpha: 0.08)
+                                    : null;
 
-                            final backgroundColor = isCorrect
-                                ? Colors.green.withValues(alpha: 0.08)
-                                : isSelected
-                                ? Colors.red.withValues(alpha: 0.08)
-                                : null;
-
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: borderColor,
-                                  width: isCorrect || isSelected ? 1.5 : 1,
-                                ),
-                              ),
-                              child: Material(
-                                color: backgroundColor ?? Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                                clipBehavior: Clip.antiAlias,
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 4,
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: borderColor,
+                                      width: isCorrect || isSelected ? 1.5 : 1,
+                                    ),
                                   ),
-                                  leading: isCorrect
-                                      ? const Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green,
-                                        )
-                                      : Radio<int>(
-                                          value: optionIndex,
-                                          groupValue: selectedAnswer,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _answers[questionIndex] = value;
-                                            });
-                                          },
-                                        ),
-                                  title: Text(options[optionIndex]),
-                                  trailing: isCorrect
-                                      ? const Icon(
-                                          Icons.verified,
-                                          color: Colors.green,
-                                        )
-                                      : isSelected
-                                      ? const Icon(
-                                          Icons.radio_button_checked,
-                                          color: Colors.red,
-                                        )
-                                      : null,
-                                  onTap: () {
-                                    setState(() {
-                                      _answers[questionIndex] = optionIndex;
-                                    });
-                                  },
-                                ),
-                              ),
-                            );
-                          }),
+                                  child: Material(
+                                    color: backgroundColor ??
+                                        Colors.transparent,
+                                    borderRadius: BorderRadius.circular(12),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: ListTile(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 4,
+                                      ),
+                                      leading: isCorrect
+                                          ? const Icon(
+                                              Icons.check_circle,
+                                              color: Colors.green,
+                                            )
+                                          : Radio<int>(value: optionIndex),
+                                      title: Text(options[optionIndex]),
+                                      trailing: isCorrect
+                                          ? const Icon(
+                                              Icons.verified,
+                                              color: Colors.green,
+                                            )
+                                          : isSelected
+                                          ? const Icon(
+                                              Icons.radio_button_checked,
+                                              color: Colors.red,
+                                            )
+                                          : null,
+                                      onTap: () {
+                                        setState(() {
+                                          _answers[questionIndex] =
+                                              optionIndex;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
 
                           const SizedBox(height: 12),
                           // Penjelasan jika tersedia

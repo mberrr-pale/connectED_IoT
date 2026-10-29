@@ -1,5 +1,6 @@
 import 'package:connected_iot/services/learning_progress_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 import '../features/home/presentation/home_page.dart';
 import '../features/home/presentation/meeting_detail_page.dart';
@@ -7,7 +8,6 @@ import '../features/materials/presentation/materials_page.dart';
 import '../features/profile/presentation/profile_page.dart';
 import '../features/results/presentation/results_page.dart';
 import '../features/simulation/presentation/simulation_page.dart';
-import '../models/learning_progress.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 import 'meeting_detail_page.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../models/learning_progress.dart';
 import '../../../models/student_profile.dart';
 import '../../../services/profile_storage.dart';
 import '../../../widgets/app_page_header.dart';

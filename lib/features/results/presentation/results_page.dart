@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../models/learning_progress.dart';
 import '../../../widgets/app_page_header.dart';
 import '../../../services/profile_storage.dart';
 
@@ -81,6 +81,17 @@ class ResultsPage extends StatelessWidget {
     int number,
     MeetingProgress meeting,
   ) async {
+    if (!meeting.isMeetingCompleted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Selesaikan semua tahap pembelajaran sebelum membagikan hasil.',
+          ),
+        ),
+      );
+      return;
+    }
+
     final student = await ProfileStorage.load();
     final preTest = meeting.preTestScore;
     final postTest = meeting.firstPostTestScore;
@@ -273,7 +284,9 @@ class ResultsPage extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () => _showMeetingQrCode(context, number, meeting),
+                  onPressed: meeting.isMeetingCompleted
+                      ? () => _showMeetingQrCode(context, number, meeting)
+                      : null,
                   icon: const Icon(Icons.qr_code_rounded, size: 20),
                   label: const Text('Bagikan Hasil'),
                   style: ElevatedButton.styleFrom(

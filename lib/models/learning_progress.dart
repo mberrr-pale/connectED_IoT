@@ -95,6 +95,9 @@ class MeetingProgress {
 
   bool get passedPostTest =>
       bestPostTestScore != null && bestPostTestScore! >= passingScore;
+  
+  bool get isMeetingCompleted =>
+    LearningStage.values.every((stage) => completedStages.contains(stage));
 
   bool get canRetryPostTest =>
       !passedPostTest &&

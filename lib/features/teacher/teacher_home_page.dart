@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 
 // import 'meeting_detail_page.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../models/teacher_profile.dart';
-import '../../../services/profile_storage.dart';
-import '../../../widgets/app_page_header.dart';
+import '../../core/theme/app_colors.dart';
+import '../../models/teacher_profile.dart';
+import '../../services/profile_storage.dart';
+import '../../widgets/app_page_header.dart';
 
 class TeacherHomePage extends StatefulWidget {
   final VoidCallback onOpenMaterials;
+  final VoidCallback onOpenResults;
 
-  const TeacherHomePage({super.key, required this.onOpenMaterials});
+  const TeacherHomePage({
+    super.key,
+    required this.onOpenMaterials,
+    required this.onOpenResults,
+  });
 
   @override
   State<TeacherHomePage> createState() => _TeacherHomePageState();
@@ -195,7 +200,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: widget.onOpenMaterials,
+        onTap: widget.onOpenResults,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Row(

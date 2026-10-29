@@ -1,7 +1,7 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'Connected IoT';
+  static const String appName = 'ConnectED IoT';
   static const String appTagline =
       'Belajar Internet of Things dengan lebih interaktif';
 

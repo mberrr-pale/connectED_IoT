@@ -87,11 +87,14 @@ class _PreTestPageState extends State<PreTestPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pre-test - Pertemuan ${widget.meetingNumber}'),
-        leadingWidth: 150,
-        leading: TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('‹ Keluar dari kuis'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Pre-test - Pertemuan ${widget.meetingNumber}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       body: SafeArea(

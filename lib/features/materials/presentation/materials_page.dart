@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../models/learning_progress.dart';
 import '../../../widgets/app_page_header.dart';
 
 class MaterialsPage extends StatelessWidget {

@@ -546,7 +546,7 @@ class _TeacherRecapPageState extends State<TeacherRecapPage>
               ),
               const SizedBox(height: 7),
               const Text(
-                'Kumpulkan hasil belajar',
+                'Rekap Hasil Belajar Siswa',
                 style: TextStyle(
                   fontSize: 23,
                   height: 1.25,

@@ -8,6 +8,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/profile_storage.dart';
 import 'onboarding_screen.dart';
+import '../../../app/teacher_navigation.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -53,13 +54,20 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    final profile = await ProfileStorage.load();
+    final teacherProfile = await ProfileStorage.loadTeacher();
+    final studentProfile = await ProfileStorage.load();
 
     if (!mounted) return;
 
-    final destination = profile != null
-        ? const MainNavigation()
-        : const OnboardingScreen();
+    final Widget destination;
+
+    if (teacherProfile != null) {
+      destination = const TeacherNavigation();
+    } else if (studentProfile != null) {
+      destination = const MainNavigation();
+    } else {
+      destination = const OnboardingScreen();
+    }
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(

@@ -37,10 +37,20 @@ class _TeacherNavigationState extends State<TeacherNavigation> {
     });
   }
 
+  void _openResults() {
+    setState(() {
+      _selectedIndex = 2;
+      _selectedMeetingNumber = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = <Widget>[
-      TeacherHomePage(onOpenMaterials: _openMaterials),
+      TeacherHomePage(
+        onOpenMaterials: _openMaterials,
+        onOpenResults: _openResults,
+      ),
 
       _selectedMeetingNumber == null
           ? TeacherMaterialsPage(onOpenMeeting: _openMeeting)
@@ -48,6 +58,7 @@ class _TeacherNavigationState extends State<TeacherNavigation> {
               key: ValueKey(_selectedMeetingNumber),
               meetingNumber: _selectedMeetingNumber!,
               meetingTitle: _meetingTitle(_selectedMeetingNumber!),
+              onBack: _backToMaterials,
               onOpenSimulation: () {
                 // Aksi simulasi bisa dihubungkan ke tab simulasi.
                 debugPrint('Membuka simulasi');

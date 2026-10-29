@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../materials/data/meeting_learning_objectives.dart';
@@ -8,12 +9,12 @@ import 'learning_video_page.dart';
 import 'post_test_page.dart';
 import 'reflection_page.dart';
 import 'preview_page.dart';
-import '../../../models/learning_progress.dart';
 
 class MeetingDetailPage extends StatefulWidget {
   final int meetingNumber;
   final String meetingTitle;
   final VoidCallback onOpenSimulation;
+  final VoidCallback onBack;
   final LearningStage? initialStage;
 
   const MeetingDetailPage({
@@ -21,6 +22,7 @@ class MeetingDetailPage extends StatefulWidget {
     required this.meetingNumber,
     required this.meetingTitle,
     required this.onOpenSimulation,
+    required this.onBack,
     this.initialStage,
   });
 
@@ -60,7 +62,13 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
         'Tujuan pembelajaran untuk pertemuan ini belum tersedia.';
 
     return Scaffold(
-      appBar: AppBar(title: Text('Pertemuan ${widget.meetingNumber}')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: widget.onBack,
+        ),
+        title: Text('Pertemuan ${widget.meetingNumber}'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -203,6 +211,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
           MaterialPageRoute(
             builder: (_) => PreviewPage(
               meetingNumber: widget.meetingNumber,
+              showSimulationButton: false,
               onOpenSimulation: () {
                 Navigator.pop(context, true);
               },

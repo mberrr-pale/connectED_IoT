@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import 'student_identity_screen.dart';
 import 'teacher_identity_screen.dart';
+import '../../../widgets/app_page_header.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -10,11 +11,15 @@ class RoleSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pilih Peran')),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(8, 4, 8, 24),
           children: [
+            const AppPageHeader(
+              title: 'Pilih Peran',
+              subtitle: 'Masuk sebagai Guru atau Siswa',
+              icon: Icons.memory_rounded
+            ),
             Text(
               'Selamat datang!',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -26,7 +31,7 @@ class RoleSelectionScreen extends StatelessWidget {
             const SizedBox(height: 12),
 
             const Text(
-              'Pilih peranmu untuk melanjutkan ke Connected IoT.',
+              'Pilih peranmu untuk melanjutkan ke ConnectED IoT.',
               style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             ),
 

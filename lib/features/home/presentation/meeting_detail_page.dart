@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../models/learning_progress.dart';
 import '../../materials/data/meeting_learning_objectives.dart';
 import '../../materials/presentation/pre_test_page.dart';
 import '../../materials/presentation/learning_content_page.dart';

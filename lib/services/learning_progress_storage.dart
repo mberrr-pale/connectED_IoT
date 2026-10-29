@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../models/learning_progress.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 class LearningProgressStorage {
   LearningProgressStorage._();
