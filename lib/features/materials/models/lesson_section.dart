@@ -1,9 +1,4 @@
-
-enum LessonSectionType {
-  text,
-  image,
-  bulletList,
-}
+enum LessonSectionType { text, image, bulletList }
 
 class LessonSection {
   final String title;

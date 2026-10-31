@@ -1,13 +1,13 @@
-
+import 'package:connected_iot/services/learning_progress_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
-import '../core/theme/app_colors.dart';
 import '../features/home/presentation/home_page.dart';
+import '../features/home/presentation/meeting_detail_page.dart';
 import '../features/materials/presentation/materials_page.dart';
 import '../features/profile/presentation/profile_page.dart';
 import '../features/results/presentation/results_page.dart';
 import '../features/simulation/presentation/simulation_page.dart';
-import '../models/learning_progress.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -19,15 +19,55 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
-  final LearningProgress _progress = LearningProgress.initial();
+  late LearningProgress _progress;
+  bool _isLoadingProgress = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    try {
+      final savedProgress = await LearningProgressStorage.load();
+
+      if (!mounted) return;
+
+      setState(() {
+        _progress = savedProgress;
+        _isLoadingProgress = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _progress = LearningProgress.initial();
+        _isLoadingProgress = false;
+      });
+    }
+  }
+
+  void _handleProgressChanged() {
+    if (!mounted) return;
+
+    setState(() {});
+    _saveProgress();
+  }
+
+  Future<void> _saveProgress() async {
+    try {
+      await LearningProgressStorage.save(_progress);
+    } catch (error) {
+      debugPrint('Gagal menyimpan progres belajar: $error');
+    }
+  }
 
   bool get _isSimulationUnlocked {
     final meeting = _progress.meetings[1]!;
 
     return meeting.passedPostTest &&
-        LearningStage.values.every(
-          (stage) => meeting.isStageCompleted(stage),
-        );
+        LearningStage.values.every((stage) => meeting.isStageCompleted(stage));
   }
 
   void _openSimulation() {
@@ -40,26 +80,69 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingProgress) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final pages = <Widget>[
       HomePage(
         progress: _progress,
-        onProgressChanged: () => setState(() {}),
+        onProgressChanged: _handleProgressChanged,
         onOpenSimulation: _openSimulation,
+        onOpenResult: () {
+          setState(() {
+            _selectedIndex = 3;
+          });
+        },
       ),
-      const MaterialsPage(),
-      _isSimulationUnlocked
-          ? const SimulationPage(meetingNumber: 1)
-          : const _LockedSimulationPage(),
-      const ResultsPage(),
+      MaterialsPage(
+        progress: _progress,
+        onOpenMeeting: (meetingNumber) {
+          final meeting = _progress.meetings[meetingNumber]!;
+
+          final meetingTitles = <int, String>{
+            1: 'Pertemuan 1 - Konsep IoT & Mikrokontroler',
+            2: 'Pertemuan 2 - Sensor & IoT Protocol',
+            3: 'Pertemuan 3 - Cloud IoT Integration',
+            4: 'Pertemuan 4 - Dashboard Monitoring',
+          };
+
+          if (!_progress.isMeetingUnlocked(meetingNumber)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Lulus post-test pertemuan sebelumnya '
+                  'untuk membuka pertemuan ini.',
+                ),
+              ),
+            );
+            return;
+          }
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MeetingDetailPage(
+                meetingNumber: meetingNumber,
+                meetingTitle: meetingTitles[meetingNumber]!,
+                progress: meeting,
+                isUnlocked: true,
+                onProgressChanged: _handleProgressChanged,
+                onOpenSimulation: _openSimulation,
+              ),
+            ),
+          ).then((_) {
+            if (mounted) setState(() {});
+          });
+        },
+      ),
+      SimulationPage(progress: _progress),
+      ResultsPage(progress: _progress),
       const ProfilePage(),
     ];
 
     return Scaffold(
       body: SafeArea(
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: pages,
-        ),
+        child: IndexedStack(index: _selectedIndex, children: pages),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -67,9 +150,7 @@ class _MainNavigationState extends State<MainNavigation> {
           if (index == 2 && !_isSimulationUnlocked) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text(
-                  'Selesaikan Pertemuan 1 untuk membuka Simulasi.',
-                ),
+                content: Text('Selesaikan Pertemuan 1 untuk membuka Simulasi.'),
               ),
             );
             return;
@@ -106,50 +187,6 @@ class _MainNavigationState extends State<MainNavigation> {
             label: 'Profil',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LockedSimulationPage extends StatelessWidget {
-  const _LockedSimulationPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Simulasi'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.lock_outline_rounded,
-                size: 56,
-                color: AppColors.textSecondary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Simulasi Belum Terbuka',
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Selesaikan keenam tahap Pertemuan 1, '
-                'termasuk Post-test, Refleksi, dan Preview, '
-                'untuk membuka Simulasi.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

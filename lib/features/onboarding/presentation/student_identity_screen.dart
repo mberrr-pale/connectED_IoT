@@ -10,12 +10,10 @@ class StudentIdentityScreen extends StatefulWidget {
   const StudentIdentityScreen({super.key});
 
   @override
-  State<StudentIdentityScreen> createState() =>
-      _StudentIdentityScreenState();
+  State<StudentIdentityScreen> createState() => _StudentIdentityScreenState();
 }
 
-class _StudentIdentityScreenState
-    extends State<StudentIdentityScreen> {
+class _StudentIdentityScreenState extends State<StudentIdentityScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
@@ -65,9 +63,7 @@ class _StudentIdentityScreenState
 
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (_) => const MainNavigation(),
-        ),
+        MaterialPageRoute(builder: (_) => const MainNavigation()),
         (route) => false,
       );
     } catch (error) {
@@ -75,9 +71,7 @@ class _StudentIdentityScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Profil belum berhasil disimpan. Silakan coba lagi.',
-          ),
+          content: Text('Profil belum berhasil disimpan. Silakan coba lagi.'),
         ),
       );
     } finally {
@@ -92,9 +86,7 @@ class _StudentIdentityScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Identitas Siswa'),
-      ),
+      appBar: AppBar(title: const Text('Identitas Siswa')),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -103,22 +95,16 @@ class _StudentIdentityScreenState
             children: [
               Text(
                 'Kenalan dulu, yuk!',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
                 'Isi identitasmu untuk menyimpan progres belajar '
                 'di perangkat ini.',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
+                style: TextStyle(color: AppColors.textSecondary, height: 1.5),
               ),
               const SizedBox(height: 28),
 
@@ -160,9 +146,7 @@ class _StudentIdentityScreenState
                 child: FilledButton(
                   onPressed: _isSaving ? null : _saveProfile,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 4),
                     child: _isSaving
                         ? const SizedBox(
                             width: 22,
@@ -182,7 +166,7 @@ class _StudentIdentityScreenState
       ),
     );
   }
-  
+
   Widget _buildField({
     required TextEditingController controller,
     required String label,
@@ -203,19 +187,16 @@ class _StudentIdentityScreenState
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          keyboardType:
-              digitsOnly ? TextInputType.number : TextInputType.text,
+          keyboardType: digitsOnly ? TextInputType.number : TextInputType.text,
           inputFormatters: digitsOnly
               ? [FilteringTextInputFormatter.digitsOnly]
               : null,
-          textCapitalization:
-              digitsOnly ? TextCapitalization.none : TextCapitalization.words,
+          textCapitalization: digitsOnly
+              ? TextCapitalization.none
+              : TextCapitalization.words,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(
-              icon,
-              color: AppColors.textSecondary,
-            ),
+            prefixIcon: Icon(icon, color: AppColors.textSecondary),
           ),
           validator: (value) => _validateRequired(value, label),
         ),

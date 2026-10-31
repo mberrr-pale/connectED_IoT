@@ -37,7 +37,14 @@ dependencies:
   shared_preferences: ^2.5.3
   youtube_player_iframe: ^6.0.2
   url_launcher: ^6.3.3
-
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.4.2
+  sqflite: ^2.4.5
+  path: ^1.9.1
+  excel: ^4.0.6
+  path_provider: ^2.1.6
+  share_plus: ^13.3.1
+  permission_handler: 11.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -48,6 +55,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -60,7 +68,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets: 
-    - assets/images/materials/meeting_1/ 
+    - assets/images/materials/meeting_1/
+    - assets/images/materials/meeting_2/
+    - assets/images/materials/meeting_3/
+    - assets/images/materials/meeting_4/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -92,3 +103,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets//images/icons/icons.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets//images/icons/icons.png"

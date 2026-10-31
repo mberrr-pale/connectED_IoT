@@ -1,8 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'package:connected_iot/models/learning_progress.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../models/learning_progress.dart';
 import '../../materials/data/meeting_learning_objectives.dart';
 import '../../materials/presentation/pre_test_page.dart';
 import '../../materials/presentation/learning_content_page.dart';
@@ -19,6 +18,8 @@ class MeetingDetailPage extends StatefulWidget {
   final VoidCallback onProgressChanged;
   final VoidCallback onOpenSimulation;
 
+  final LearningStage? initialStage;
+
   const MeetingDetailPage({
     super.key,
     required this.meetingNumber,
@@ -27,6 +28,7 @@ class MeetingDetailPage extends StatefulWidget {
     required this.isUnlocked,
     required this.onProgressChanged,
     required this.onOpenSimulation,
+    this.initialStage,
   });
 
   @override
@@ -34,27 +36,48 @@ class MeetingDetailPage extends StatefulWidget {
 }
 
 class _MeetingDetailPageState extends State<MeetingDetailPage> {
+  bool _initialStageOpened = false;
+
+  List<Map<String, dynamic>> get _lastQuestions =>
+      widget.progress.lastPostTestQuestions;
+  List<int?> get _lastAnswer =>
+      widget.progress.lastPostTestAnswers;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_initialStageOpened) return;
+    _initialStageOpened = true;
+
+    final stage = widget.initialStage;
+    if (stage == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _openStage(stage);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final stages = LearningStage.values;
     final completed = widget.progress.completedStages.length;
     final objective =
         meetingLearningObjectives[widget.meetingNumber] ??
-            'Tujuan pembelajaran untuk pertemuan ini belum tersedia.';
+        'Tujuan pembelajaran untuk pertemuan ini belum tersedia.';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pertemuan ${widget.meetingNumber}'),
-      ),
+      appBar: AppBar(title: Text('Pertemuan ${widget.meetingNumber}')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
             widget.meetingTitle,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 12),
           Container(
@@ -107,11 +130,19 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          for (int i = 0; i < stages.length; i++)
-            _buildStageTile(stages[i], i),
+          for (int i = 0; i < stages.length; i++) _buildStageTile(stages[i], i),
         ],
       ),
     );
+  }
+
+  bool _isStageAvailable(LearningStage stage) {
+    if (!widget.isUnlocked) return false;
+
+    final index = LearningStage.values.indexOf(stage);
+    if (index == 0) return true;
+
+    return widget.progress.isStageCompleted(LearningStage.values[index - 1]);
   }
 
   String _getStageSubtitle(
@@ -143,12 +174,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
 
   Widget _buildStageTile(LearningStage stage, int index) {
     final isCompleted = widget.progress.isStageCompleted(stage);
-
-    final isStageAvailable = widget.isUnlocked &&
-        (index == 0 ||
-            widget.progress.isStageCompleted(
-              LearningStage.values[index - 1],
-            ));
+    final isStageAvailable = _isStageAvailable(stage);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -161,155 +187,141 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
             isCompleted
                 ? Icons.check_circle_rounded
                 : isStageAvailable
-                    ? Icons.play_arrow_rounded
-                    : Icons.lock_outline_rounded,
-            color: isCompleted
-                ? AppColors.primary
-                : AppColors.textMuted,
+                ? Icons.play_arrow_rounded
+                : Icons.lock_outline_rounded,
+            color: isCompleted ? AppColors.primary : AppColors.textMuted,
           ),
         ),
         title: Text(stage.label),
-        subtitle: Text(
-          _getStageSubtitle(stage, isCompleted, isStageAvailable),
-        ),
+        subtitle: Text(_getStageSubtitle(stage, isCompleted, isStageAvailable)),
         trailing: const Icon(Icons.chevron_right_rounded),
         enabled: isStageAvailable,
-        onTap: isStageAvailable
-            ? () async {
-                if (stage == LearningStage.preTest) {
-                  final completed = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PreTestPage(
-                        meetingNumber: widget.meetingNumber,
-                      ),
-                    ),
-                  );
-
-                  if (completed == true && mounted) {
-                    setState(() {
-                      widget.progress.completeStage(
-                        LearningStage.preTest,
-                      );
-                    });
-                    widget.onProgressChanged();
-                  }
-                  return;
-                }
-
-                if (stage == LearningStage.material) {
-                  final completed = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LearningContentPage(
-                        meetingNumber: widget.meetingNumber,
-                      ),
-                    ),
-                  );
-
-                  if (completed == true && mounted) {
-                    setState(() {
-                      widget.progress.completeStage(
-                        LearningStage.material,
-                      );
-                    });
-                    widget.onProgressChanged();
-                  }
-                  return;
-                }
-
-                if (stage == LearningStage.video) {
-                  final completed = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LearningVideoPage(
-                        meetingNumber: widget.meetingNumber,
-                      ),
-                    ),
-                  );
-
-                  if (completed == true && mounted) {
-                    setState(() {
-                      widget.progress.completeStage(
-                        LearningStage.video,
-                      );
-                    });
-                    widget.onProgressChanged();
-                  }
-                  return;
-                }
-
-                if (stage == LearningStage.postTest) {
-                  await _openPostTest();
-                  return;
-                }
-
-                if (stage == LearningStage.reflection) {
-                  await _openReflection();
-                  return;
-                }
-
-                if (stage == LearningStage.preview) {
-                  final completed = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PreviewPage(
-                        meetingNumber: widget.meetingNumber,
-                        onOpenSimulation: () {
-                          Navigator.pop(context, true);
-                        },
-                      ),
-                    ),
-                  );
-
-                  if (completed == true && mounted) {
-                    setState(() {
-                      widget.progress.completeStage(
-                        LearningStage.preview,
-                      );
-                    });
-                    widget.onProgressChanged();
-
-                    final meetingOne = widget.meetingNumber == 1;
-                    final allStagesCompleted = LearningStage.values.every(
-                      (stage) => widget.progress.isStageCompleted(stage),
-                    );
-
-                    if (meetingOne &&
-                        widget.progress.passedPostTest &&
-                        allStagesCompleted) {
-                      Navigator.pop(context);
-                      widget.onOpenSimulation();
-                    }
-                  }
-                  return;
-                }
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Tahap ${stage.label} belum tersedia.',
-                    ),
-                  ),
-                );
-              }
-            : null,
+        onTap: isStageAvailable ? () => _openStage(stage) : null,
       ),
     );
+  }
+
+  Future<void> _openStage(LearningStage stage) async {
+    if (!mounted) return;
+
+    if (!_isStageAvailable(stage)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Selesaikan langkah sebelumnya terlebih dahulu.'),
+        ),
+      );
+      return;
+    }
+
+    if (stage == LearningStage.preTest) {
+      final result = await Navigator.push<Map<String, dynamic>>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PreTestPage(meetingNumber: widget.meetingNumber),
+        ),
+      );
+
+      if (result != null && result['completed'] == true && mounted) {
+        final score = result['score'] as int;
+
+        setState(() {
+          widget.progress.recordPreTestResult(score: score);
+          widget.progress.completeStage(LearningStage.preTest);
+        });
+
+        widget.onProgressChanged();
+      }
+      return;
+    }
+
+    if (stage == LearningStage.material) {
+      final completed = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              LearningContentPage(meetingNumber: widget.meetingNumber),
+        ),
+      );
+
+      if (completed == true && mounted) {
+        setState(() {
+          widget.progress.completeStage(LearningStage.material);
+        });
+        widget.onProgressChanged();
+      }
+      return;
+    }
+
+    if (stage == LearningStage.video) {
+      final completed = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              LearningVideoPage(meetingNumber: widget.meetingNumber),
+        ),
+      );
+
+      if (completed == true && mounted) {
+        setState(() {
+          widget.progress.completeStage(LearningStage.video);
+        });
+        widget.onProgressChanged();
+      }
+      return;
+    }
+
+    if (stage == LearningStage.postTest) {
+      await _openPostTest();
+      return;
+    }
+
+    if (stage == LearningStage.reflection) {
+      await _openReflection(
+        questions: _lastQuestions, 
+        answers: _lastAnswer);
+      return;
+    }
+
+    if (stage == LearningStage.preview) {
+      final openSimulation = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PreviewPage(
+            meetingNumber: widget.meetingNumber,
+            onOpenSimulation: () {
+              Navigator.pop(context, true);
+            },
+          ),
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (openSimulation == true) {
+        setState(() {
+          widget.progress.completeStage(LearningStage.preview);
+        });
+        widget.onProgressChanged();
+
+        // Pindah ke tab Simulasi.
+        widget.onOpenSimulation();
+
+        // Tutup halaman detail pertemuan.
+        Navigator.pop(context);
+      }
+      return;
+    }
   }
 
   Future<void> _openPostTest() async {
     final navigator = Navigator.of(context);
 
     while (mounted && widget.progress.canRetryPostTest) {
-      final attemptNumber =
-          widget.progress.attemptsInCurrentRound + 1;
+      final attemptNumber = widget.progress.attemptsInCurrentRound + 1;
 
       final result = await navigator.push<Map<String, dynamic>>(
         MaterialPageRoute(
-          builder: (_) => PostTestPage(
-            meetingNumber: widget.meetingNumber,
-          ),
+          builder: (_) => PostTestPage(meetingNumber: widget.meetingNumber),
         ),
       );
 
@@ -317,11 +329,14 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
 
       final score = result['score'] as int;
       final answers = List<int?>.from(result['answers'] as List);
-      final questions =
-          List<Map<String, dynamic>>.from(result['questions'] as List);
+      final questions = List<Map<String, dynamic>>.from(
+        result['questions'] as List,
+      );
 
       setState(() {
         widget.progress.recordPostTestResult(score: score);
+        widget.progress.lastPostTestQuestions = questions;
+        widget.progress.lastPostTestAnswers = answers;
       });
       widget.onProgressChanged();
 
@@ -334,9 +349,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
         barrierDismissible: false,
         builder: (dialogContext) {
           return AlertDialog(
-            title: Text(
-              passed ? 'Post-test Lulus!' : 'Hasil Post-test',
-            ),
+            title: Text(passed ? 'Post-test Lulus!' : 'Hasil Post-test'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,16 +359,16 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
                 Text(
                   passed
                       ? 'Selamat! Kamu memenuhi nilai minimum '
-                          '${MeetingProgress.passingScore} dan dapat '
-                          'melanjutkan ke Refleksi.'
+                            '${MeetingProgress.passingScore} dan dapat '
+                            'melanjutkan ke Refleksi.'
                       : requiresReview
-                          ? 'Kamu belum mencapai nilai minimum '
-                              '${MeetingProgress.passingScore}. '
-                              'Silakan pelajari kembali Materi dan tonton '
-                              'Video sebelum mencoba Post-test lagi.'
-                          : 'Nilai minimum kelulusan adalah '
-                              '${MeetingProgress.passingScore}. '
-                              'Kamu masih memiliki satu kesempatan lagi.',
+                      ? 'Kamu belum mencapai nilai minimum '
+                            '${MeetingProgress.passingScore}. '
+                            'Silakan pelajari kembali Materi dan tonton '
+                            'Video sebelum mencoba Post-test lagi.'
+                      : 'Nilai minimum kelulusan adalah '
+                            '${MeetingProgress.passingScore}. '
+                            'Kamu masih memiliki satu kesempatan lagi.',
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -368,23 +381,17 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
             actions: [
               if (canRetry)
                 TextButton(
-                  onPressed: () {
-                    Navigator.pop(dialogContext, false);
-                  },
+                  onPressed: () => Navigator.pop(dialogContext, false),
                   child: const Text('Nanti'),
                 ),
               if (canRetry)
                 FilledButton(
-                  onPressed: () {
-                    Navigator.pop(dialogContext, true);
-                  },
+                  onPressed: () => Navigator.pop(dialogContext, true),
                   child: const Text('Ulangi Post-test'),
                 ),
               if (!canRetry)
                 FilledButton(
-                  onPressed: () {
-                    Navigator.pop(dialogContext, false);
-                  },
+                  onPressed: () => Navigator.pop(dialogContext, false),
                   child: Text(passed ? 'Lanjut' : 'Mengerti'),
                 ),
             ],
@@ -396,10 +403,7 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
 
       if (passed) {
         if (retryNow == false) {
-          await _openReflection(
-            questions: questions,
-            answers: answers,
-          );
+          await _openReflection(questions: questions, answers: answers);
         }
         return;
       }
@@ -409,13 +413,14 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
   }
 
   Future<void> _openReflection({
-    List<Map<String, dynamic>> questions = const [],
-    List<int?> answers = const [],
+    required List<Map<String, dynamic>> questions,
+    required List<int?> answers,
   }) async {
     final completed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => ReflectionPage(
+          meetingNumber: widget.meetingNumber,
           questions: questions,
           answers: answers,
         ),

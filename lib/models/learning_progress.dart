@@ -1,4 +1,3 @@
-
 enum LearningStage {
   preTest('Pre-test'),
   material('Materi'),
@@ -19,6 +18,10 @@ class MeetingProgress {
   final int meetingNumber;
   final Set<LearningStage> completedStages = {};
 
+  List<Map<String, dynamic>> lastPostTestQuestions = [];
+  List<int?> lastPostTestAnswers = [];
+
+  int? preTestScore;
   int? firstPostTestScore;
   int? bestPostTestScore;
 
@@ -28,14 +31,90 @@ class MeetingProgress {
 
   MeetingProgress({required this.meetingNumber});
 
+  MeetingProgress.fromMap(Map<String, dynamic> map)
+    : meetingNumber = (map['meetingNumber'] as num?)?.toInt() ?? 1 {
+    final savedStages = map['completedStages'];
+
+    if (savedStages is List) {
+      for (final value in savedStages) {
+        if (value is String) {
+          for (final stage in LearningStage.values) {
+            if (stage.name == value) {
+              completedStages.add(stage);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    preTestScore = (map['preTestScore'] as num?)?.toInt();
+    firstPostTestScore = (map['firstPostTestScore'] as num?)?.toInt();
+    bestPostTestScore = (map['bestPostTestScore'] as num?)?.toInt();
+
+    attemptsInCurrentRound =
+        (map['attemptsInCurrentRound'] as num?)?.toInt() ?? 0;
+
+    requiresReview = map['requiresReview'] as bool? ?? false;
+
+    _materialReviewedAfterFailure =
+        map['materialReviewedAfterFailure'] as bool? ?? false;
+
+    final savedQuestions = map['lastPostTestQuestions'];
+
+    if (savedQuestions is List) {
+      lastPostTestQuestions = savedQuestions
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+
+    final savedAnswers = map['lastPostTestAnswers'];
+
+    if (savedAnswers is List) {
+      lastPostTestAnswers = savedAnswers.map<int?>((answer) {
+        return answer is num ? answer.toInt() : null;
+      }).toList();
+    }
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'meetingNumber': meetingNumber,
+      'completedStages': completedStages.map((stage) => stage.name).toList(),
+      'preTestScore': preTestScore,
+      'firstPostTestScore': firstPostTestScore,
+      'bestPostTestScore': bestPostTestScore,
+      'attemptsInCurrentRound': attemptsInCurrentRound,
+      'requiresReview': requiresReview,
+      'materialReviewedAfterFailure': _materialReviewedAfterFailure,
+      'lastPostTestQuestions': lastPostTestQuestions,
+      'lastPostTestAnswers': lastPostTestAnswers,
+    };
+  }
+
   bool get passedPostTest =>
-      bestPostTestScore != null &&
-      bestPostTestScore! >= passingScore;
+      bestPostTestScore != null && bestPostTestScore! >= passingScore;
+  
+  bool get isMeetingCompleted =>
+    LearningStage.values.every((stage) => completedStages.contains(stage));
 
   bool get canRetryPostTest =>
       !passedPostTest &&
       !requiresReview &&
       attemptsInCurrentRound < maxAttemptsPerRound;
+
+  void recordPreTestResult({required int score}) {
+    if (score < 0 || score > 100) {
+      throw ArgumentError.value(
+        score,
+        'score',
+        'Nilai harus berada pada rentang 0–100.',
+      );
+    }
+
+    preTestScore = score;
+  }
 
   bool isStageCompleted(LearningStage stage) {
     return completedStages.contains(stage);
@@ -60,8 +139,6 @@ class MeetingProgress {
 
       completedStages.add(LearningStage.video);
 
-      // Materi dan video sudah diulang.
-      // Buka putaran Post-test berikutnya.
       attemptsInCurrentRound = 0;
       requiresReview = false;
       _materialReviewedAfterFailure = false;
@@ -97,7 +174,6 @@ class MeetingProgress {
     }
 
     attemptsInCurrentRound++;
-
     firstPostTestScore ??= score;
 
     if (bestPostTestScore == null || score > bestPostTestScore!) {
@@ -130,10 +206,47 @@ class LearningProgress {
   final Map<int, MeetingProgress> meetings;
 
   LearningProgress.initial()
-      : meetings = {
-          for (int i = 1; i <= totalMeetings; i++)
-            i: MeetingProgress(meetingNumber: i),
-        };
+    : meetings = {
+        for (int i = 1; i <= totalMeetings; i++)
+          i: MeetingProgress(meetingNumber: i),
+      };
+
+  LearningProgress.fromMap(Map<String, dynamic> map)
+    : meetings = _meetingsFromMap(map['meetings']);
+
+  static Map<int, MeetingProgress> _meetingsFromMap(dynamic savedMeetings) {
+    final result = <int, MeetingProgress>{
+      for (int i = 1; i <= totalMeetings; i++)
+        i: MeetingProgress(meetingNumber: i),
+    };
+
+    if (savedMeetings is Map) {
+      for (final entry in savedMeetings.entries) {
+        final meetingNumber = int.tryParse(entry.key.toString());
+        final data = entry.value;
+
+        if (meetingNumber != null &&
+            meetingNumber >= 1 &&
+            meetingNumber <= totalMeetings &&
+            data is Map) {
+          result[meetingNumber] = MeetingProgress.fromMap(
+            Map<String, dynamic>.from(data),
+          );
+        }
+      }
+    }
+
+    return result;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'meetings': {
+        for (final entry in meetings.entries)
+          entry.key.toString(): entry.value.toMap(),
+      },
+    };
+  }
 
   int get completedStageCount {
     return meetings.values.fold(

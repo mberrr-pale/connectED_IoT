@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../data/assessments/meeting_1_pre_test.dart';
+import '../data/assessments/meeting_2_pre_test.dart';
+import '../data/assessments/meeting_3_pre_test.dart';
+import '../data/assessments/meeting_4_pre_test.dart';
+
 class PreTestPage extends StatefulWidget {
   final int meetingNumber;
 
-  const PreTestPage({
-    super.key,
-    required this.meetingNumber,
-  });
+  const PreTestPage({super.key, required this.meetingNumber});
 
   @override
   State<PreTestPage> createState() => _PreTestPageState();
@@ -14,80 +16,41 @@ class PreTestPage extends StatefulWidget {
 
 class _PreTestPageState extends State<PreTestPage> {
   int _currentQuestion = 0;
-  final List<int?> _answers = List<int?>.filled(7, null);
 
-  final List<Map<String, dynamic>> _questions = [
-    {
-      'question': 'Dashboard IoT berfungsi untuk...',
-      'options': [
-        'Memantau data perangkat',
-        'Membuat sensor',
-        'Memasang kabel',
-        'Mengisi baterai',
-      ],
-    },
-    {
-      'question': 'Apa kepanjangan dari IoT?',
-      'options': [
-        'Internet of Things',
-        'Input of Technology',
-        'Integration of Tools',
-        'Internet of Technology',
-      ],
-    },
-    {
-      'question': 'Sensor dalam sistem IoT digunakan untuk...',
-      'options': [
-        'Mendeteksi kondisi lingkungan',
-        'Mencetak dokumen',
-        'Mengisi daya perangkat',
-        'Menghapus program',
-      ],
-    },
-    {
-      'question': 'Internet of Things menghubungkan perangkat agar dapat...',
-      'options': [
-        'Menghapus seluruh data',
-        'Mencetak dokumen',
-        'Bertukar data melalui jaringan',
-        'Bekerja tanpa listrik',
-      ],
-    },
-    {
-      'question': 'Perangkat yang dapat digunakan untuk membaca suhu adalah...',
-      'options': [
-        'Sensor suhu',
-        'Speaker',
-        'Monitor',
-        'Keyboard',
-      ],
-    },
-    {
-      'question': 'Data dari sensor dapat diproses oleh...',
-      'options': [
-        'Mikrokontroler',
-        'Casing perangkat',
-        'Kabel biasa tanpa rangkaian',
-        'Dudukan perangkat',
-      ],
-    },
-    {
-      'question': 'Salah satu contoh penerapan IoT adalah...',
-      'options': [
-        'Lampu otomatis berbasis sensor',
-        'Buku catatan biasa',
-        'Meja tanpa perangkat elektronik',
-        'Kertas gambar',
-      ],
-    },
-  ];
+  late final List<Map<String, dynamic>> _questions;
+  late final List<int?> _answers;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _questions = switch (widget.meetingNumber) {
+      1 => meeting1PreTestQuestions,
+      2 => meeting2PreTestQuestions,
+      3 => meeting3PreTestQuestions,
+      4 => meeting4PreTestQuestions,
+      _ => <Map<String, dynamic>>[],
+    };
+
+    _answers = List<int?>.filled(_questions.length, null);
+  }
+
+  int _calculateScore() {
+    var correctAnswers = 0;
+
+    for (var i = 0; i < _questions.length; i++) {
+      if (_answers[i] == _questions[i]['correctAnswer']) {
+        correctAnswers++;
+      }
+    }
+
+    return (correctAnswers * 100 / _questions.length).round();
+  }
 
   void _nextQuestion() {
     if (_answers[_currentQuestion] == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pilih jawaban terlebih dahulu.'),
-        ),
+        const SnackBar(content: Text('Pilih jawaban terlebih dahulu.')),
       );
       return;
     }
@@ -96,25 +59,42 @@ class _PreTestPageState extends State<PreTestPage> {
       setState(() {
         _currentQuestion++;
       });
-    } else {
-      Navigator.pop(context, true);
+      return;
     }
+
+    final score = _calculateScore();
+
+    Navigator.pop(context, {
+      'completed': true,
+      'score': score,
+      'meetingNumber': widget.meetingNumber,
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_questions.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pre-test')),
+        body: const Center(child: Text('Soal Pre-test belum tersedia.')),
+      );
+    }
+
     final question = _questions[_currentQuestion];
-    final options = question['options'] as List<String>;
+    final options = List<String>.from(question['options'] as List);
     final progress = (_currentQuestion + 1) / _questions.length;
     final isLastQuestion = _currentQuestion == _questions.length - 1;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pre-test'),
-        leadingWidth: 150,
-        leading: TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('‹ Keluar dari kuis'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Pre-test - Pertemuan ${widget.meetingNumber}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       body: SafeArea(
@@ -125,19 +105,13 @@ class _PreTestPageState extends State<PreTestPage> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 6,
-                ),
+                child: LinearProgressIndicator(value: progress, minHeight: 6),
               ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Pre-test',
-                    style: TextStyle(fontSize: 12),
-                  ),
+                  const Text('Pre-test', style: TextStyle(fontSize: 12)),
                   Text(
                     '${_currentQuestion + 1}/${_questions.length}',
                     style: const TextStyle(
@@ -159,11 +133,9 @@ class _PreTestPageState extends State<PreTestPage> {
               Expanded(
                 child: ListView.separated(
                   itemCount: options.length,
-                  separatorBuilder: (_, _) =>
-                      const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
-                    final isSelected =
-                        _answers[_currentQuestion] == index;
+                    final isSelected = _answers[_currentQuestion] == index;
 
                     return InkWell(
                       borderRadius: BorderRadius.circular(12),
@@ -182,10 +154,8 @@ class _PreTestPageState extends State<PreTestPage> {
                                 : Colors.grey.shade300,
                           ),
                           color: isSelected
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withValues(alpha: 0.08)
+                              ? Theme.of(context).colorScheme.primary
+                                    .withValues(alpha: 0.08)
                               : Colors.transparent,
                         ),
                         child: Row(

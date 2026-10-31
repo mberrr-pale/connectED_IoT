@@ -1,8 +1,9 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import 'student_identity_screen.dart';
+import 'teacher_identity_screen.dart';
+import '../../../widgets/app_page_header.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -10,32 +11,28 @@ class RoleSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pilih Peran'),
-      ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(8, 4, 8, 24),
           children: [
+            const AppPageHeader(
+              title: 'Pilih Peran',
+              subtitle: 'Masuk sebagai Guru atau Siswa',
+              icon: Icons.memory_rounded
+            ),
             Text(
               'Selamat datang!',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
 
             const SizedBox(height: 12),
 
             const Text(
-              'Pilih peranmu untuk melanjutkan ke Connected IoT.',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              'Pilih peranmu untuk melanjutkan ke ConnectED IoT.',
+              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             ),
 
             const SizedBox(height: 32),
@@ -52,8 +49,7 @@ class RoleSelectionScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>
-                        const StudentIdentityScreen(),
+                    builder: (_) => const StudentIdentityScreen(),
                   ),
                 );
               },
@@ -70,22 +66,10 @@ class RoleSelectionScreen extends StatelessWidget {
               color: AppColors.violet,
               backgroundColor: AppColors.violetLight,
               onTap: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    title: const Text('Mode Guru'),
-                    content: const Text(
-                      'Halaman guru akan kita hubungkan pada '
-                      'tahap berikutnya.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(dialogContext);
-                        },
-                        child: const Text('Mengerti'),
-                      ),
-                    ],
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const TeacherIdentityScreen(),
                   ),
                 );
               },
@@ -131,11 +115,7 @@ class _RoleCard extends StatelessWidget {
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 32,
-                ),
+                child: Icon(icon, color: color, size: 32),
               ),
 
               const SizedBox(width: 16),

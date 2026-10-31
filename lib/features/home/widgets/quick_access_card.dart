@@ -29,7 +29,13 @@ class QuickAccessCard extends StatelessWidget {
             children: [
               Icon(icon, color: color, size: 30),
               const SizedBox(height: 14),
-              Text(title, style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w700)),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: AppColors.text,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
         ),
